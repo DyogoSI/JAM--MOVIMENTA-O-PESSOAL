@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Movimentação de Pessoal - JAM Engenharia</title>
+    <meta charset="utf-8">
+    
+    <link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="/portal/resources/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+    
+    <script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+    
+    <style>
+        /* =========================================
+           RESET E BACKGROUND
+        ========================================= */
+        * { box-sizing: border-box; }
+        body, html { 
+            background: linear-gradient(135deg, #e6eef5 0%, #d5dfe8 100%) !important; 
+            min-height: 100vh; 
+            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
+            margin: 0; padding: 0; 
+        }
+        form { padding: 40px 20px; max-width: 98%; margin: 0 auto; }
+
+        /* =========================================
+           SISTEMA DE GRID CUSTOMIZADO (FLEXBOX)
+        ========================================= */
+        .container-fluid { width: 100%; }
+        .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-3 { flex: 0 0 25%; max-width: 25%; padding: 0 15px; }
+        .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; padding: 0 15px; }
+        .col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; padding: 0 15px; }
+        .col-md-6 { flex: 0 0 50%; max-width: 50%; padding: 0 15px; }
+        .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; padding: 0 15px; }
+        .col-md-12 { flex: 0 0 100%; max-width: 100%; padding: 0 15px; }
+        .form-group { margin-bottom: 15px; width: 100%; }
+        
+        @media (max-width: 768px) {
+            .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-8 { flex: 0 0 100%; max-width: 100%; }
+        }
+
+        /* =========================================
+           CABEÇALHO DA PÁGINA
+        ========================================= */
+        .page-header { 
+            background-color: #ffffff; padding: 25px; border-radius: 12px; 
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06); 
+            border-top: 6px solid #2C75B9; text-align: center; margin-bottom: 35px; border-bottom: none;
+        }
+        .page-header h2 { font-weight: 800; color: #F29620; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; font-size: 24px; }
+
+        /* =========================================
+           ESTILO DOS PAINÉIS E ÍCONES BRANCOS
+        ========================================= */
+        .panel { border-radius: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px; background-color: #ffffff; overflow: hidden; display: block; width: 100%; border: none; }
+        
+        /* Cores de Fundo dos Painéis */
+        .panel-default > .panel-heading { background-color: #2C75B9; color: white; border: none; }
+        .panel-primary > .panel-heading { background-color: #2C75B9; color: white; border: none; }
+        #divAnalise .panel-heading { background-color: #F29620; color: white; border: none; }
+        #divReabertura .panel-heading { background-color: #1e5283; color: white; border: none; }
+        #painelAprovacao .panel-heading { background-color: #2C75B9; color: white; border: none; }
+        
+        .panel-heading { padding: 18px 25px; }
+        .panel-title { font-size: 17px; font-weight: 700; color: #ffffff; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
+        .panel-body { padding: 30px 25px; }
+        
+        /* Ícones customizados em SVG */
+        .panel-title .fluigicon { 
+            margin-right: 10px; 
+            width: 18px; 
+            height: 18px; 
+            filter: brightness(0) invert(1); 
+            display: inline-block; 
+            background-size: contain; 
+            background-repeat: no-repeat; 
+            background-position: center; 
+        }
+        .panel-title .fluigicon::before { content: none !important; }
+        
+        .fluigicon-user-config { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h274.9c-2.4-6.8-3.4-14-2.6-21.3l6.8-60.9 1.2-11.1 7.9-7.9 77.3-77.3c-24.5-27.7-60-45.5-99.9-45.5zm45.3 145.3l-6.8 61c-1.1 10.2 7.5 18.8 17.6 17.6l60.9-6.8 137.9-137.9-71.7-71.7-137.9 137.8zM633 268.9L595.1 231c-9.3-9.3-24.5-9.3-33.8 0l-37.8 37.8-4.1 4.1 71.8 71.7 41.8-41.8c9.3-9.4 9.3-24.5 0-33.9z"/></svg>'); }
+        .fluigicon-user { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"/></svg>'); }
+        .fluigicon-form { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M104 96H56c-13.3 0-24 10.7-24 24v336c0 13.3 10.7 24 24 24h400c13.3 0 24-10.7 24-24V120c0-13.3-10.7-24-24-24h-48V16c0-8.8-7.2-16-16-16h-64c-8.8 0-16 7.2-16 16v80H216V16c0-8.8-7.2-16-16-16h-64c-8.8 0-16 7.2-16 16v80zM24 496c-13.2 0-24-10.8-24-24V120c0-13.2 10.8-24 24-24h48v32c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32v-32h160v32c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32v-32h48c13.2 0 24 10.8 24 24v352c0 13.2-10.8 24-24 24H24zM160 264V240c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h48c13.3 0 24-10.7 24-24zm0 128v-24c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h48c13.3 0 24-10.7 24-24zm288-128v-24c0-13.3-10.7-24-24-24H200c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h224c13.3 0 24-10.7 24-24zm0 128v-24c0-13.3-10.7-24-24-24H200c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h224c13.3 0 24-10.7 24-24z"/></svg>'); }
+        .fluigicon-checked { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"/></svg>'); }
+
+        /* =========================================
+           FORMULÁRIOS, INPUTS E LABELS
+        ========================================= */
+        label { font-weight: 700; color: #2C75B9; margin-bottom: 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; }
+        
+        .form-control { 
+            border-radius: 6px !important; 
+            border: 1px solid #c0c6cc !important; 
+            padding: 6px 12px !important;
+            height: 36px !important; 
+            line-height: 1.42857143 !important;
+            font-size: 13px !important; 
+            color: #444 !important; 
+            transition: all 0.3s ease; 
+            display: block; 
+            width: 100%; 
+            background-color: #fff; 
+            box-sizing: border-box; 
+            font-family: inherit;
+        }
+        
+        select.form-control { appearance: auto; }
+        .form-control:focus { border-color: #F29620; box-shadow: 0 0 0 3px rgba(242, 150, 32, 0.15); outline: none; }
+        .form-control[readonly], .form-control[disabled] { background-color: #f4f6f9 !important; color: #7a828a !important; border-color: #e2e7ec !important; cursor: not-allowed; font-weight: 500; }
+
+        /* Estilo Checkbox customizado para as opções de Movimentação */
+        .check-movimento { display: flex; align-items: center; margin-top: 15px; margin-bottom: 10px; }
+        .check-movimento input { margin: 0; margin-right: 8px; width: 16px; height: 16px; cursor: pointer; }
+        .check-movimento label { margin: 0; font-size: 13px; color: #444; text-transform: uppercase; font-weight: 700; cursor: pointer; }
+
+        /* =========================================
+           LUPA DO ZOOM: CENTRALIZADA E ISOLADA
+        ========================================= */
+        .input-group { 
+            display: flex !important; 
+            width: 100% !important; 
+            align-items: stretch !important; 
+            height: 36px !important; 
+        }
+        
+        .input-group .form-control { 
+            border-top-right-radius: 0 !important; 
+            border-bottom-right-radius: 0 !important; 
+            flex: 1 !important; 
+            margin: 0 !important; 
+            z-index: 1; 
+            height: 36px !important; 
+        }
+        
+        .input-group-addon .fluigicon { display: none !important; }
+
+        .input-group-addon { 
+            background-color: #f4f6f9 !important; 
+            border: 1px solid #c0c6cc !important; 
+            border-left: none !important; 
+            border-radius: 0 6px 6px 0 !important; 
+            width: 40px !important; 
+            height: 36px !important; 
+            cursor: pointer; 
+            box-sizing: border-box !important; 
+            padding: 0 !important; 
+            margin: 0 !important; 
+            
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16"><path fill="%232C75B9" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            background-size: 16px !important;
+        }
+        
+        /* Ajustes Select2 (Para evitar o bug do zoom oculto no Fluig) */
+        .select2-container { width: 100% !important; }
+        .select2-container .select2-selection--single { 
+            height: 36px !important; 
+            border-radius: 6px !important; 
+            border: 1px solid #c0c6cc !important; 
+            padding: 6px 12px !important; 
+            display: flex !important;
+            align-items: center !important;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { 
+            line-height: normal !important;
+            padding: 0 !important; 
+            font-size: 13px !important; 
+            color: #444 !important; 
+            width: 100%;
+        }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px !important; top: 1px !important; }
+    </style>
+</head>
+<body>
+    <form name="form" role="form">
+        <input type="hidden" id="TxtChapa" name="TxtChapa" />
+        <input type="hidden" id="CodPessoa" name="CodPessoa" />
+        <input type="hidden" id="TxtNomeCol" name="TxtNomeCol" />
+        <input type="hidden" id="DtLimitFer" name="DtLimitFer" />
+        <input type="hidden" id="txtDtAdm" name="txtDtAdm" />
+        <input type="hidden" id="txtMembCipaCod" name="txtMembCipaCod" />
+        <input type="hidden" id="CodTipo" name="CodTipo" />
+        <input type="hidden" id="CodCategoria" name="CodCategoria" />
+        <input type="hidden" id="txtSalOrigem" name="txtSalOrigem" />
+        <input type="hidden" id="TEMPRAZOCONTR" name="TEMPRAZOCONTR" />
+        <input type="hidden" id="FIMPRAZOCONTR" name="FIMPRAZOCONTR" />
+        <input type="hidden" id="NROFICHAREG" name="NROFICHAREG" />
+        <input type="hidden" id="CODRECEBIMENTO" name="CODRECEBIMENTO" />
+        <input type="hidden" id="IndiceAtual" name="IndiceAtual" />
+        <input type="hidden" id="CodFilialDestino" name="CodFilialDestino" />
+
+        <div class="container-fluid">
+            
+            <div class="page-header">
+                <h2>MOVIMENTAÇÃO DE PESSOAL</h2>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-user-config fluigicon-sm"></i> Dados do Solicitante</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            <label for="nSolicitacao">N. Solicitação</label>
+                            <input type="text" class="form-control" name="nSolicitacao" id="nSolicitacao" readonly>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label for="dataAbertura">Data Abertura</label>
+                            <input type="text" class="form-control" name="dataAbertura" id="dataAbertura" readonly>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="solicitante">Solicitante</label>
+                            <input type="text" class="form-control" name="solicitante" id="solicitante" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-user fluigicon-sm"></i> Dados do Colaborador</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label for="empresaColab">Empresa-Filial</label>
+                            <input type="zoom" id="empresaColab" name="empresaColab"
+                                   data-zoom="{
+                                       'displayKey':'NOME',
+                                       'datasetId':'ds_empresaFilial',
+                                       'maximumSelectionLength':'1',
+                                       'placeholder':'Pesquise a coligada...',
+                                       'fields':[
+                                           {'field':'COLIGADA', 'label':'Coligada'},
+                                           {'field':'NOME', 'label':'Nome da Empresa', 'standard':'true','search':'true'},
+                                           {'field':'CODFILIAL', 'label':'Filial'},
+                                           {'field':'NOMEFANTASIAFILIAL', 'label':'Nome Filial', 'search':'true'}
+                                       ]
+                                   }" class="form-control" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="dptoObraColab">Dpto/Obra</label>
+                            <input type="zoom" id="dptoObraColab" name="dptoObraColab"
+                                   data-zoom="{
+                                       'displayKey':'DESCRICAO',
+                                       'datasetId':'ds_dptoObra',
+                                       'maximumSelectionLength':'1',
+                                       'placeholder':'Pesquise o dpto/obra...',
+                                       'fields':[
+                                           {'field':'CODIGO', 'label':'Código'},
+                                           {'field':'DESCRICAO', 'label':'Descrição do Dpto/Obra', 'standard':'true', 'search':'true'},
+                                           {'field':'CODFILIAL', 'visible':'false'},
+                                           {'field':'CODCOLIGADA', 'visible':'false'}
+                                       ]
+                                   }" class="form-control" />
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="nomeColaborador">Nome do Colaborador</label>
+                            <input type="zoom" id="nomeColaborador" name="nomeColaborador"
+                                   data-zoom="{
+                                       'displayKey':'NOME',
+                                       'datasetId':'ds_colaboradores',
+                                       'maximumSelectionLength':'1',
+                                       'placeholder':'Pesquise o colaborador...',
+                                       'fields':[
+                                           {'field':'CHAPA', 'label':'Matrícula'},
+                                           {'field':'NOME', 'label':'Nome', 'standard':'true', 'search':'true'},
+                                           {'field':'CARGO', 'visible':'false'},
+                                           {'field':'DATAADMISSAO', 'visible':'false'},
+                                           {'field':'TIPOFUNCIONARIO', 'visible':'false'},
+                                           {'field':'SITUACAO', 'visible':'false'},
+                                           {'field':'CODCOLIGADA', 'visible':'false'},
+                                           {'field':'CODFILIAL', 'visible':'false'},
+                                           {'field':'CODSECAO', 'visible':'false'}
+                                       ]
+                                   }" class="form-control" />
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            <label for="dataAdmissao">Data da Admissão</label>
+                            <input type="text" class="form-control" name="dataAdmissao" id="dataAdmissao" readonly>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label for="cargo">Cargo Atual</label>
+                            <input type="text" class="form-control" name="cargo" id="cargo" readonly>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label for="matricula">Matrícula</label>
+                            <input type="text" class="form-control" name="matricula" id="matricula" readonly>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label for="estabilidade">Estabilidade</label>
+                            <input type="text" class="form-control" name="estabilidade" id="estabilidade" readonly>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 form-group">
+                            <label for="gestor">Gestor</label>
+                            <input type="text" class="form-control" name="gestor" id="gestor" readonly>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="tipoFuncionario">Tipo Funcionário</label>
+                            <input type="text" class="form-control" name="tipoFuncionario" id="tipoFuncionario" readonly>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="codSituacao">Situação</label>
+                            <input type="text" class="form-control" name="codSituacao" id="codSituacao" readonly>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-form fluigicon-sm"></i> MOVIMENTAÇÕES</h3>
+                </div>
+                <div class="panel-body">
+                    
+                    <h4 style="color: #2C75B9; font-weight: 700; margin-bottom: 5px; margin-top: 0; text-transform: uppercase; font-size: 14px;">Quais movimentações serão feitas?</h4>
+                    
+                    <div class="row">
+                        <div class="col-md-3 check-movimento"><label><input type="checkbox" id="Ckb1" name="Ckb1" /> Departamento/Obra</label></div>
+                        <div class="col-md-3 check-movimento"><label><input type="checkbox" id="Ckb2" name="Ckb2" /> Função</label></div>
+                        <div class="col-md-3 check-movimento"><label><input type="checkbox" id="Ckb3" name="Ckb3" /> Horário</label></div>
+                        <div class="col-md-3 check-movimento"><label><input type="checkbox" id="Ckb5" name="Ckb5" /> Salário</label></div>
+                    </div>
+
+                    <div class="NovaSecao" style="display: none;">
+                        <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
+                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Departamento/Obra</h4>
+                        
+                        <input type="hidden" name="txtSecOrig" id="txtSecOrig">
+                        <input type="hidden" name="DesNovaSecao" id="DesNovaSecao">
+                        <input type="hidden" name="codGestorDestino" id="codGestorDestino">
+                        <input type="hidden" name="cpNovoGestor" id="cpNovoGestor">
+                        <input type="hidden" name="txtCodMotivoSecao" id="txtCodMotivoSecao">
+
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Dpto/Obra Atual</label>
+                                <input type="text" name="txtCodSecaoOri" id="txtCodSecaoOri" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Data da Mudança</label>
+                                <input type="date" name="dtMudancaSecao" id="dtMudancaSecao" class="form-control NovaSecao">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label for="CodNovaSecao">Novo Dpto/Obra</label>
+                                <input type="zoom" id="CodNovaSecao" name="CodNovaSecao" class="form-control NovaSecao"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_dptoObra',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise o novo dpto/obra...',
+                                           'fields':[
+                                               {'field':'CODIGO', 'label':'Código'},
+                                               {'field':'DESCRICAO', 'label':'Descrição do Dpto/Obra', 'standard':'true', 'search':'true'},
+                                               {'field':'CODFILIAL', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 form-group">
+                                <label>Motivo da Alteração</label>
+                                <input type="text" name="txtMotivoSecao" id="txtMotivoSecao" class="form-control NovaSecao">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="NovaFuncao" style="display: none;">
+                        <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
+                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Função</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Função Atual</label>
+                                <input type="text" name="txtCodFuncao" id="txtCodFuncao" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label>Descrição da Função Atual</label>
+                                <input type="text" name="CargoCol" id="CargoCol" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Data da Mudança</label>
+                                <input type="date" name="dtMudancaFuncao" id="dtMudancaFuncao" class="form-control NovaFuncao">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Nova Função</label>
+                                <div class="input-group">
+                                    <input type="text" name="txtNovoCodFuncao" id="txtNovoCodFuncao" class="form-control NovaFuncao" readonly>
+                                    <div class="input-group-addon" id="addFuncao"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Descrição da Nova Função</label>
+                                <input type="text" name="txtNovoFuncao" id="txtNovoFuncao" class="form-control NovaFuncao" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Motivo Alteração</label>
+                                <div class="input-group">
+                                    <input type="text" name="txtCodMotivoFuncao" id="txtCodMotivoFuncao" class="form-control NovaFuncao" readonly>
+                                    <div class="input-group-addon" id="addMotivoFuncao"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Motivo da Alteração</label>
+                                <input type="text" name="txtMotivoFuncao" id="txtMotivoFuncao" class="form-control NovaFuncao">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="NovoHorario" style="display: none;">
+                        <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
+                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Horário</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Horário Atual</label>
+                                <input type="text" name="CodHorAtual" id="CodHorAtual" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label>Descrição do Horário Atual</label>
+                                <input type="text" name="DescHoraAtual" id="DescHoraAtual" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Data da Mudança</label>
+                                <input type="date" name="dtMudancaHorario" id="dtMudancaHorario" class="form-control NovoHorario">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Novo Horário</label>
+                                <div class="input-group">
+                                    <input type="text" name="CpNovoCodHorario" id="CpNovoCodHorario" class="form-control NovoHorario" readonly>
+                                    <div class="input-group-addon" id="addHorario"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Descrição do Novo Horário</label>
+                                <input type="text" name="CpNovoHorario" id="CpNovoHorario" class="form-control NovoHorario" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Novo Índice Horário</label>
+                                <div class="input-group">
+                                    <input type="text" name="CpIndiceCodHorario" id="CpIndiceCodHorario" class="form-control NovoHorario" readonly>
+                                    <div class="input-group-addon" id="addIndHorario"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Descrição do Índice Horário</label>
+                                <input type="text" name="CpIndiceHorario" id="CpIndiceHorario" class="form-control NovoHorario" readonly>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Motivo Alteração</label>
+                                <div class="input-group">
+                                    <input type="text" name="txtCodMotivoHorario" id="txtCodMotivoHorario" class="form-control NovoHorario" readonly>
+                                    <div class="input-group-addon" id="addMotivoHorario"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Motivo da Alteração</label>
+                                <input type="text" name="txtMotivoHorario" id="txtMotivoHorario" class="form-control NovoHorario">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="NovoSalario" style="display: none;">
+                        <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
+                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Salário</h4>
+                        
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Salário Atual</label>
+                                <input type="text" name="Salario" id="Salario" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-5 form-group">
+                                <label>Jornada Mensal Atual</label>
+                                <input type="text" name="cpJornadaMensal" id="cpJornadaMensal" class="form-control" readonly>
+                                <input type="hidden" name="cpJornadaFormatada" id="cpJornadaFormatada" />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>Data da Mudança</label>
+                                <input type="date" name="dtMudancaSalario" id="dtMudancaSalario" class="form-control NovoSalario">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Novo Salário</label>
+                                <div class="input-group">
+                                    <input type="text" name="NovoSalario" id="NovoSalario" class="form-control Valor NovoSalario" readonly>
+                                    <div class="input-group-addon" id="addSalario"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label>Cód. Motivo Alteração</label>
+                                <div class="input-group">
+                                    <input type="text" name="txtCodMotivoSalario" id="txtCodMotivoSalario" class="form-control NovoSalario" readonly>
+                                    <div class="input-group-addon" id="addMotivoSalario"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-8 form-group">
+                                <label>Motivo da Alteração</label>
+                                <input type="text" name="txtMotivoSalario" id="txtMotivoSalario" class="form-control NovoSalario">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="panel panel-info" id="divAnalise">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-checked fluigicon-sm"></i> Resposta RH</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="cpRespGestor2">Analista Responsável (RH)</label>
+                            <input type="text" name="cpRespGestor2" id="cpRespGestor2" class="form-control" readonly />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="cpDecisaoRH">Decisão</label>
+                            <select name="cpDecisaoRH" id="cpDecisaoRH" class="form-control">
+                                <option value="">Selecione...</option>
+                                <option value="Correto">Enviar solução</option>
+                                <option value="Incorreto">Devolver para o solicitante</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <label for="cpParecercol2">Parecer do RH</label>
+                            <textarea class="form-control" rows="3" name="cpParecercol2" id="cpParecercol2" placeholder="Escreva observações ou os motivos da devolução..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-primary" id="divReabertura">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-form fluigicon-sm"></i> Ação Solicitante</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="cpReaberturaChamado">Ação do Solicitante</label>
+                            <select class="form-control" name="cpReaberturaChamado" id="cpReaberturaChamado">
+                                <option value="">Selecione...</option>
+                                <option value="2">Finalizar Solicitação</option>
+                                <option value="1">Reencaminhar para o RH</option>
+                                <option value="3">Cancelar Solicitação</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <label for="cpParecerReabertura">Resposta / Parecer</label>
+                            <textarea rows="3" class="form-control" name="cpParecerReabertura" id="cpParecerReabertura" placeholder="Descreva o motivo da sua ação..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-info" id="painelAprovacao">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><i class="fluigicon fluigicon-checked fluigicon-sm"></i> Aprovação</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-6 form-group">
+                            <label for="cpAprovador">Aprovador</label>
+                            <input type="text" name="cpAprovador" id="cpAprovador" class="form-control" readonly />
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="cpDecisaoAprovacao">Decisão</label>
+                            <select name="cpDecisaoAprovacao" id="cpDecisaoAprovacao" class="form-control">
+                                <option value="">Selecione...</option>
+                                <option value="Aprovado">Aprovado</option>
+                                <option value="Reprovado">Reprovado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </form>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        // Bloqueia os zooms dependentes no carregamento inicial
+        setTimeout(function() {
+            if(window["dptoObraColab"]) window["dptoObraColab"].disable(true);
+            if(window["nomeColaborador"]) window["nomeColaborador"].disable(true); 
+            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(true); 
+        }, 500);
+
+        // ========================================================
+        // LOGICA DE EXIBIR E OCULTAR PAINÉIS DOS CHECKBOXES
+        // ========================================================
+        function configurarToggleCheckbox(idCheckbox, classeAlvo) {
+            var $checkbox = $('#' + idCheckbox);
+            var $alvo = $('.' + classeAlvo);
+            
+            // Verifica estado inicial ao abrir a página (útil na visualização do Fluig em outras etapas)
+            if($checkbox.is(':checked')) {
+                $alvo.show();
+            } else {
+                $alvo.hide();
+            }
+            
+            // Verifica o estado toda vez que ocorre uma alteração (clique)
+            $checkbox.on('change', function() {
+                if($(this).is(':checked')) {
+                    $alvo.slideDown(300); // Exibe descendo suavemente
+                } else {
+                    $alvo.slideUp(300);   // Oculta subindo suavemente
+                }
+            });
+        }
+
+        // Aplicando a função para cada checkbox e seu respectivo painel
+        configurarToggleCheckbox('Ckb1', 'NovaSecao');
+        configurarToggleCheckbox('Ckb2', 'NovaFuncao');
+        configurarToggleCheckbox('Ckb3', 'NovoHorario');
+        configurarToggleCheckbox('Ckb5', 'NovoSalario');
+    });
+
+    // ========================================================
+    // LOGICA DE RECARREGAMENTO E PREENCHIMENTO DOS ZOOMS
+    // ========================================================
+    function setSelectedZoomItem(selectedItem) {
+        // Quando seleciona a Empresa, libera Dpto/Obra do Colaborador E Novo Dpto/Obra
+        if (selectedItem.inputId == "empresaColab") {
+            window["dptoObraColab"].disable(false); 
+            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(false); 
+            
+            var filter = "CODCOLIGADA," + selectedItem.COLIGADA;
+            if (selectedItem.CODFILIAL) {
+                filter += ",CODFILIAL," + selectedItem.CODFILIAL;
+            }
+            reloadZoomFilterValues("dptoObraColab", filter);
+            reloadZoomFilterValues("CodNovaSecao", filter);
+        }
+
+        // Quando seleciona Dpto/Obra, libera Colaborador e preenche Dpto Atual
+        if (selectedItem.inputId == "dptoObraColab") {
+            window["nomeColaborador"].disable(false); 
+            reloadZoomFilterValues("nomeColaborador", "CODSECAO," + selectedItem.CODIGO);
+
+            // Preenche o campo Dpto/Obra Atual com Código e Descrição
+            $("#txtCodSecaoOri").val((selectedItem.CODIGO || "") + " - " + (selectedItem.DESCRICAO || ""));
+            $("#txtSecOrig").val(selectedItem.DESCRICAO || ""); // Mantém o hidden preenchido por segurança
+        }
+        
+        // Quando seleciona o NOVO Dpto/Obra (Zoom Integrado)
+        if (selectedItem.inputId == "CodNovaSecao") {
+            $("#DesNovaSecao").val(selectedItem.DESCRICAO || ""); // Salva hidden
+            $("#cpNovoGestor").val("Buscando gestor..."); // Feedback visual no hidden se for exibido dnv
+            
+            // Lógica para buscar e salvar o novo gestor
+            setTimeout(function() {
+                try {
+                    var constraints = [];
+                    var codSecao = Array.isArray(selectedItem.CODIGO) ? selectedItem.CODIGO[0] : selectedItem.CODIGO;
+                    
+                    // Tenta pegar a coligada do item ou do primeiro zoom de empresa
+                    var codColigada = selectedItem.CODCOLIGADA;
+                    if(!codColigada) {
+                        codColigada = $("#empresaColab").val(); // Se precisar preencher
+                    }
+
+                    if (codSecao) {
+                        constraints.push(DatasetFactory.createConstraint("CODSECAO", String(codSecao), String(codSecao), ConstraintType.MUST));
+                    }
+                    if (codColigada) {
+                        constraints.push(DatasetFactory.createConstraint("CODCOLIGADA", String(codColigada), String(codColigada), ConstraintType.MUST));
+                    }
+
+                    if (constraints.length > 0) {
+                        var dsGestor = DatasetFactory.getDataset("ds_gestoresColaboradoresSecao", null, constraints, null);
+                        
+                        if (dsGestor != null && dsGestor.values != null && dsGestor.values.length > 0) {
+                            var row = dsGestor.values[0];
+                            if (row.ERRO) return;
+
+                            var codGestor = row.CHAPASUBST || "";
+                            var nomeGestor = row.NOME1 || "";
+                            
+                            if (codGestor && nomeGestor) {
+                                $("#cpNovoGestor").val(codGestor + " - " + nomeGestor);
+                                $("#codGestorDestino").val(codGestor);
+                            } else if (nomeGestor) {
+                                $("#cpNovoGestor").val(nomeGestor);
+                            } else if (codGestor) {
+                                $("#cpNovoGestor").val(codGestor);
+                                $("#codGestorDestino").val(codGestor);
+                            }
+                        } 
+                    }
+                } catch(e) {
+                    console.error("Erro na busca do novo gestor: ", e);
+                }
+            }, 150);
+        }
+
+        // Quando seleciona o Colaborador, preenche os campos readonly
+        if (selectedItem.inputId == "nomeColaborador") {
+            $("#matricula").val(selectedItem.CHAPA || "");
+            $("#cargo").val(selectedItem.CARGO || "");
+            $("#dataAdmissao").val(selectedItem.DATAADMISSAO || "");
+            $("#tipoFuncionario").val(selectedItem.TIPOFUNCIONARIO || "");
+            $("#codSituacao").val(selectedItem.SITUACAO || "");
+            $("#estabilidade").val(selectedItem.COLUMN1 || "");
+            
+            $("#gestor").val("Buscando gestor..."); 
+            
+            // Busca o gestor via Dataset integrado
+            setTimeout(function() {
+                try {
+                    var constraints = [];
+                    var codSecao = Array.isArray(selectedItem.CODSECAO) ? selectedItem.CODSECAO[0] : selectedItem.CODSECAO;
+                    var codColigada = Array.isArray(selectedItem.CODCOLIGADA) ? selectedItem.CODCOLIGADA[0] : selectedItem.CODCOLIGADA;
+                    
+                    if (codSecao) {
+                        constraints.push(DatasetFactory.createConstraint("CODSECAO", String(codSecao), String(codSecao), ConstraintType.MUST));
+                    }
+                    if (codColigada) {
+                        constraints.push(DatasetFactory.createConstraint("CODCOLIGADA", String(codColigada), String(codColigada), ConstraintType.MUST));
+                    }
+
+                    if (constraints.length > 0) {
+                        var dsGestor = DatasetFactory.getDataset("ds_gestoresColaboradoresSecao", null, constraints, null);
+                        
+                        if (dsGestor != null && dsGestor.values != null && dsGestor.values.length > 0) {
+                            var row = dsGestor.values[0];
+                            
+                            if (row.ERRO) {
+                                console.log("Erro interno no Dataset ds_gestoresColaboradoresSecao: " + row.ERRO);
+                                $("#gestor").val("Erro ao ler integração");
+                                return;
+                            }
+
+                            var codGestor = row.CHAPASUBST || "";
+                            var nomeGestor = row.NOME1 || "";
+                            
+                            if (codGestor && nomeGestor) {
+                                $("#gestor").val(codGestor + " - " + nomeGestor);
+                            } else if (nomeGestor) {
+                                $("#gestor").val(nomeGestor);
+                            } else if (codGestor) {
+                                $("#gestor").val(codGestor);
+                            } else {
+                                $("#gestor").val("Gestor cadastrado, mas sem nome");
+                            }
+                        } else {
+                            $("#gestor").val("Nenhum gestor encontrado na tabela");
+                        }
+                    } else {
+                        $("#gestor").val("Colaborador sem Seção/Coligada");
+                    }
+                } catch(e) {
+                    console.error("Erro na busca do gestor: ", e);
+                    $("#gestor").val("Falha na execução");
+                }
+            }, 150);
+        }
+    }
+
+    function removedZoomItem(removedItem) {
+        // Limpeza de campos em cascata
+        if (removedItem.inputId == "empresaColab") {
+            reloadZoomFilterValues("dptoObraColab", "");
+            if(window["dptoObraColab"]) { window["dptoObraColab"].clear(); window["dptoObraColab"].disable(true); }
+            
+            reloadZoomFilterValues("CodNovaSecao", "");
+            if(window["CodNovaSecao"]) { window["CodNovaSecao"].clear(); window["CodNovaSecao"].disable(true); }
+            
+            reloadZoomFilterValues("nomeColaborador", "");
+            if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
+            
+            $("#txtCodSecaoOri").val("");
+            $("#txtSecOrig").val("");
+        }
+
+        if (removedItem.inputId == "dptoObraColab") {
+            reloadZoomFilterValues("nomeColaborador", "");
+            if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
+            
+            // Limpa Dpto/Obra Atual se ele apagar
+            $("#txtCodSecaoOri").val("");
+            $("#txtSecOrig").val("");
+        }
+
+        if (removedItem.inputId == "nomeColaborador") {
+            $("#matricula, #cargo, #dataAdmissao, #estabilidade, #gestor, #tipoFuncionario, #codSituacao").val("");
+        }
+        
+        if (removedItem.inputId == "CodNovaSecao") {
+            $("#DesNovaSecao").val("");
+            $("#cpNovoGestor").val("");
+            $("#codGestorDestino").val("");
+        }
+    }
+</script>
+
+</body>
+</html>
