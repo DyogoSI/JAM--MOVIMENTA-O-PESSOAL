@@ -29,16 +29,18 @@
         ========================================= */
         .container-fluid { width: 100%; }
         .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
+        .col-md-2 { flex: 0 0 16.666667%; max-width: 16.666667%; padding: 0 15px; }
         .col-md-3 { flex: 0 0 25%; max-width: 25%; padding: 0 15px; }
         .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; padding: 0 15px; }
         .col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; padding: 0 15px; }
         .col-md-6 { flex: 0 0 50%; max-width: 50%; padding: 0 15px; }
         .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; padding: 0 15px; }
+        .col-md-9 { flex: 0 0 75%; max-width: 75%; padding: 0 15px; }
         .col-md-12 { flex: 0 0 100%; max-width: 100%; padding: 0 15px; }
         .form-group { margin-bottom: 15px; width: 100%; }
         
         @media (max-width: 768px) {
-            .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-8 { flex: 0 0 100%; max-width: 100%; }
+            .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-8, .col-md-9 { flex: 0 0 100%; max-width: 100%; }
         }
 
         /* =========================================
@@ -154,7 +156,7 @@
             background-size: 16px !important;
         }
         
-        /* Ajustes Select2 (Para evitar o bug do zoom oculto no Fluig) */
+        /* Ajustes Select2 */
         .select2-container { width: 100% !important; }
         .select2-container .select2-selection--single { 
             height: 36px !important; 
@@ -189,7 +191,6 @@
         <input type="hidden" id="FIMPRAZOCONTR" name="FIMPRAZOCONTR" />
         <input type="hidden" id="NROFICHAREG" name="NROFICHAREG" />
         <input type="hidden" id="CODRECEBIMENTO" name="CODRECEBIMENTO" />
-        <input type="hidden" id="IndiceAtual" name="IndiceAtual" />
         <input type="hidden" id="CodFilialDestino" name="CodFilialDestino" />
 
         <div class="container-fluid">
@@ -275,7 +276,12 @@
                                            {'field':'SITUACAO', 'visible':'false'},
                                            {'field':'CODCOLIGADA', 'visible':'false'},
                                            {'field':'CODFILIAL', 'visible':'false'},
-                                           {'field':'CODSECAO', 'visible':'false'}
+                                           {'field':'CODSECAO', 'visible':'false'},
+                                           {'field':'CODFUNCAO', 'visible':'false'},
+                                           {'field':'CODHORARIO', 'visible':'false'},
+                                           {'field':'HORARIO', 'visible':'false'},
+                                           {'field':'INDINICIOHOR', 'visible':'false'},
+                                           {'field':'COLUMN1', 'visible':'false'}
                                        ]
                                    }" class="form-control" />
                         </div>
@@ -354,8 +360,8 @@
                         </div>
                         
                         <div class="row">
-                            <div class="col-md-12 form-group">
-                                <label for="CodNovaSecao">Novo Dpto/Obra</label>
+                            <div class="col-md-6 form-group">
+                                <label>Novo Dpto/Obra</label>
                                 <input type="zoom" id="CodNovaSecao" name="CodNovaSecao" class="form-control NovaSecao"
                                        data-zoom="{
                                            'displayKey':'DESCRICAO',
@@ -370,12 +376,12 @@
                                            ]
                                        }" />
                             </div>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-12 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Motivo da Alteração</label>
-                                <input type="text" name="txtMotivoSecao" id="txtMotivoSecao" class="form-control NovaSecao">
+                                <div class="input-group">
+                                    <input type="text" name="txtMotivoSecao" id="txtMotivoSecao" class="form-control NovaSecao" readonly placeholder="Pesquise o motivo da alteração...">
+                                    <div class="input-group-addon" id="addMotivoSecao"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -432,14 +438,21 @@
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
                         <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Horário</h4>
                         
+                        <input type="hidden" name="CpIndiceHorario" id="CpIndiceHorario">
+                        <input type="hidden" name="txtCodMotivoHorario" id="txtCodMotivoHorario">
+
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label>Cód. Horário Atual</label>
                                 <input type="text" name="CodHorAtual" id="CodHorAtual" class="form-control" readonly>
                             </div>
-                            <div class="col-md-5 form-group">
+                            <div class="col-md-4 form-group">
                                 <label>Descrição do Horário Atual</label>
                                 <input type="text" name="DescHoraAtual" id="DescHoraAtual" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-2 form-group">
+                                <label>Índice Atual</label>
+                                <input type="text" name="IndiceAtual" id="IndiceAtual" class="form-control" readonly>
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>Data da Mudança</label>
@@ -448,44 +461,33 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label>Cód. Novo Horário</label>
                                 <div class="input-group">
                                     <input type="text" name="CpNovoCodHorario" id="CpNovoCodHorario" class="form-control NovoHorario" readonly>
                                     <div class="input-group-addon" id="addHorario"></div>
                                 </div>
                             </div>
-                            <div class="col-md-8 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Descrição do Novo Horário</label>
                                 <input type="text" name="CpNovoHorario" id="CpNovoHorario" class="form-control NovoHorario" readonly>
                             </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label>Cód. Novo Índice Horário</label>
+                            <div class="col-md-3 form-group">
+                                <label>Novo Índice</label>
                                 <div class="input-group">
-                                    <input type="text" name="CpIndiceCodHorario" id="CpIndiceCodHorario" class="form-control NovoHorario" readonly>
+                                    <input type="text" name="CpIndiceCodHorario" id="CpIndiceCodHorario" class="form-control NovoHorario" readonly placeholder="Pesquise...">
                                     <div class="input-group-addon" id="addIndHorario"></div>
                                 </div>
                             </div>
-                            <div class="col-md-8 form-group">
-                                <label>Descrição do Índice Horário</label>
-                                <input type="text" name="CpIndiceHorario" id="CpIndiceHorario" class="form-control NovoHorario" readonly>
-                            </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
-                                <label>Cód. Motivo Alteração</label>
+                            <div class="col-md-12 form-group">
+                                <label>Motivo da Alteração</label>
                                 <div class="input-group">
-                                    <input type="text" name="txtCodMotivoHorario" id="txtCodMotivoHorario" class="form-control NovoHorario" readonly>
+                                    <input type="text" name="txtMotivoHorario" id="txtMotivoHorario" class="form-control NovoHorario" readonly placeholder="Pesquise o motivo da alteração...">
                                     <div class="input-group-addon" id="addMotivoHorario"></div>
                                 </div>
-                            </div>
-                            <div class="col-md-8 form-group">
-                                <label>Motivo da Alteração</label>
-                                <input type="text" name="txtMotivoHorario" id="txtMotivoHorario" class="form-control NovoHorario">
                             </div>
                         </div>
                     </div>
@@ -632,29 +634,89 @@
             var $checkbox = $('#' + idCheckbox);
             var $alvo = $('.' + classeAlvo);
             
-            // Verifica estado inicial ao abrir a página (útil na visualização do Fluig em outras etapas)
+            // Verifica estado inicial ao abrir a página
             if($checkbox.is(':checked')) {
                 $alvo.show();
             } else {
                 $alvo.hide();
             }
             
-            // Verifica o estado toda vez que ocorre uma alteração (clique)
+            // Verifica o estado toda vez que ocorre uma alteração
             $checkbox.on('change', function() {
                 if($(this).is(':checked')) {
-                    $alvo.slideDown(300); // Exibe descendo suavemente
+                    $alvo.slideDown(300);
                 } else {
-                    $alvo.slideUp(300);   // Oculta subindo suavemente
+                    $alvo.slideUp(300);
                 }
             });
         }
 
-        // Aplicando a função para cada checkbox e seu respectivo painel
         configurarToggleCheckbox('Ckb1', 'NovaSecao');
         configurarToggleCheckbox('Ckb2', 'NovaFuncao');
         configurarToggleCheckbox('Ckb3', 'NovoHorario');
         configurarToggleCheckbox('Ckb5', 'NovoSalario');
     });
+
+    // ========================================================
+    // FUNÇÃO REUTILIZÁVEL AJAX PARA BUSCA INTELIGENTE DE GESTOR
+    // ========================================================
+    function buscarGestorAjax(codSecao, codColigada, callbackSucesso, callbackErro) {
+        var requestData = {
+            "name": "ds_gestoresColaboradoresSecao",
+            "fields": [],
+            "constraints": [
+                { "_field": "CODSECAO", "_initialValue": String(codSecao).trim(), "_finalValue": String(codSecao).trim(), "_type": 1, "_likeSearch": false },
+                { "_field": "CODCOLIGADA", "_initialValue": String(codColigada).trim(), "_finalValue": String(codColigada).trim(), "_type": 1, "_likeSearch": false }
+            ],
+            "order": []
+        };
+
+        var processarRetorno = function(data) {
+            var content = [];
+            // Extração inteligente baseada na resposta da API Rest Fluig vs WCMAPI
+            if (data && Array.isArray(data.values)) {
+                content = data.values; 
+            } else if (data && data.content && Array.isArray(data.content.values)) {
+                content = data.content.values; 
+            } else if (data && Array.isArray(data.content)) {
+                content = data.content; 
+            } else if (Array.isArray(data)) {
+                content = data;
+            }
+            callbackSucesso(content);
+        };
+
+        var tentarFallback = function() {
+            $.ajax({
+                url: '/ecm/api/rest/ecm/dataset/getDataset',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(requestData),
+                success: processarRetorno,
+                error: callbackErro
+            });
+        };
+
+        try {
+            if (typeof window.parent !== 'undefined' && window.parent.WCMAPI) {
+                window.parent.WCMAPI.Create({
+                    url: "/api/public/ecm/dataset/datasets/",
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(requestData),
+                    success: processarRetorno,
+                    error: function(err) {
+                        console.error("Erro OAuth/WCMAPI: ", err);
+                        tentarFallback();
+                    }
+                });
+            } else {
+                tentarFallback();
+            }
+        } catch(e) {
+            tentarFallback();
+        }
+    }
 
     // ========================================================
     // LOGICA DE RECARREGAMENTO E PREENCHIMENTO DOS ZOOMS
@@ -680,62 +742,52 @@
 
             // Preenche o campo Dpto/Obra Atual com Código e Descrição
             $("#txtCodSecaoOri").val((selectedItem.CODIGO || "") + " - " + (selectedItem.DESCRICAO || ""));
-            $("#txtSecOrig").val(selectedItem.DESCRICAO || ""); // Mantém o hidden preenchido por segurança
+            $("#txtSecOrig").val(selectedItem.DESCRICAO || ""); 
         }
         
         // Quando seleciona o NOVO Dpto/Obra (Zoom Integrado)
         if (selectedItem.inputId == "CodNovaSecao") {
-            $("#DesNovaSecao").val(selectedItem.DESCRICAO || ""); // Salva hidden
-            $("#cpNovoGestor").val("Buscando gestor..."); // Feedback visual no hidden se for exibido dnv
+            $("#DesNovaSecao").val(selectedItem.DESCRICAO || ""); 
+            $("#cpNovoGestor").val("Buscando gestor..."); 
             
-            // Lógica para buscar e salvar o novo gestor
             setTimeout(function() {
-                try {
-                    var constraints = [];
-                    var codSecao = Array.isArray(selectedItem.CODIGO) ? selectedItem.CODIGO[0] : selectedItem.CODIGO;
-                    
-                    // Tenta pegar a coligada do item ou do primeiro zoom de empresa
-                    var codColigada = selectedItem.CODCOLIGADA;
-                    if(!codColigada) {
-                        codColigada = $("#empresaColab").val(); // Se precisar preencher
-                    }
+                var codSecaoDest = Array.isArray(selectedItem.CODIGO) ? selectedItem.CODIGO[0] : selectedItem.CODIGO;
+                var codColigadaDest = selectedItem.CODCOLIGADA;
+                if(!codColigadaDest) {
+                    codColigadaDest = $("#empresaColab").val(); 
+                }
 
-                    if (codSecao) {
-                        constraints.push(DatasetFactory.createConstraint("CODSECAO", String(codSecao), String(codSecao), ConstraintType.MUST));
-                    }
-                    if (codColigada) {
-                        constraints.push(DatasetFactory.createConstraint("CODCOLIGADA", String(codColigada), String(codColigada), ConstraintType.MUST));
-                    }
-
-                    if (constraints.length > 0) {
-                        var dsGestor = DatasetFactory.getDataset("ds_gestoresColaboradoresSecao", null, constraints, null);
-                        
-                        if (dsGestor != null && dsGestor.values != null && dsGestor.values.length > 0) {
-                            var row = dsGestor.values[0];
+                if (codSecaoDest && codColigadaDest) {
+                    buscarGestorAjax(codSecaoDest, codColigadaDest, function(content) {
+                        if (content && content.length > 0) {
+                            var row = content[0];
                             if (row.ERRO) return;
 
-                            var codGestor = row.CHAPASUBST || "";
-                            var nomeGestor = row.NOME1 || "";
+                            var codGestor = row.CHAPASUBST && String(row.CHAPASUBST) !== "null" ? String(row.CHAPASUBST).trim() : "";
+                            var nomeGestor = row.NOME1 && String(row.NOME1) !== "null" ? String(row.NOME1).trim() : "";
                             
-                            if (codGestor && nomeGestor) {
+                            if (codGestor !== "" && nomeGestor !== "") {
                                 $("#cpNovoGestor").val(codGestor + " - " + nomeGestor);
                                 $("#codGestorDestino").val(codGestor);
-                            } else if (nomeGestor) {
+                            } else if (nomeGestor !== "") {
                                 $("#cpNovoGestor").val(nomeGestor);
-                            } else if (codGestor) {
+                            } else if (codGestor !== "") {
                                 $("#cpNovoGestor").val(codGestor);
                                 $("#codGestorDestino").val(codGestor);
                             }
-                        } 
-                    }
-                } catch(e) {
-                    console.error("Erro na busca do novo gestor: ", e);
+                        } else {
+                            $("#cpNovoGestor").val("Nenhum gestor encontrado na tabela");
+                        }
+                    }, function(err) {
+                        console.error("Erro na requisição do novo gestor: ", err);
+                    });
                 }
             }, 150);
         }
 
         // Quando seleciona o Colaborador, preenche os campos readonly
         if (selectedItem.inputId == "nomeColaborador") {
+            // Campos aba Colaborador
             $("#matricula").val(selectedItem.CHAPA || "");
             $("#cargo").val(selectedItem.CARGO || "");
             $("#dataAdmissao").val(selectedItem.DATAADMISSAO || "");
@@ -743,55 +795,52 @@
             $("#codSituacao").val(selectedItem.SITUACAO || "");
             $("#estabilidade").val(selectedItem.COLUMN1 || "");
             
+            // Campos aba Função
+            $("#txtCodFuncao").val(selectedItem.CODFUNCAO || "");
+            $("#CargoCol").val(selectedItem.CARGO || "");
+
+            // Campos aba Horário
+            $("#CodHorAtual").val(selectedItem.CODHORARIO || "");
+            $("#DescHoraAtual").val(selectedItem.HORARIO || "");
+            $("#IndiceAtual").val(selectedItem.INDINICIOHOR || "");
+
             $("#gestor").val("Buscando gestor..."); 
             
-            // Busca o gestor via Dataset integrado
             setTimeout(function() {
-                try {
-                    var constraints = [];
-                    var codSecao = Array.isArray(selectedItem.CODSECAO) ? selectedItem.CODSECAO[0] : selectedItem.CODSECAO;
-                    var codColigada = Array.isArray(selectedItem.CODCOLIGADA) ? selectedItem.CODCOLIGADA[0] : selectedItem.CODCOLIGADA;
-                    
-                    if (codSecao) {
-                        constraints.push(DatasetFactory.createConstraint("CODSECAO", String(codSecao), String(codSecao), ConstraintType.MUST));
-                    }
-                    if (codColigada) {
-                        constraints.push(DatasetFactory.createConstraint("CODCOLIGADA", String(codColigada), String(codColigada), ConstraintType.MUST));
-                    }
+                var codSecao = Array.isArray(selectedItem.CODSECAO) ? selectedItem.CODSECAO[0] : selectedItem.CODSECAO;
+                var codColigada = Array.isArray(selectedItem.CODCOLIGADA) ? selectedItem.CODCOLIGADA[0] : selectedItem.CODCOLIGADA;
 
-                    if (constraints.length > 0) {
-                        var dsGestor = DatasetFactory.getDataset("ds_gestoresColaboradoresSecao", null, constraints, null);
-                        
-                        if (dsGestor != null && dsGestor.values != null && dsGestor.values.length > 0) {
-                            var row = dsGestor.values[0];
-                            
+                if (codSecao && codColigada) {
+                    buscarGestorAjax(codSecao, codColigada, function(content) {
+                        if (content && content.length > 0) {
+                            var row = content[0];
                             if (row.ERRO) {
-                                console.log("Erro interno no Dataset ds_gestoresColaboradoresSecao: " + row.ERRO);
-                                $("#gestor").val("Erro ao ler integração");
+                                console.log("Erro processado pelo script no backend: " + row.ERRO);
+                                $("#gestor").val("Erro ao ler integração (F12)");
                                 return;
                             }
 
-                            var codGestor = row.CHAPASUBST || "";
-                            var nomeGestor = row.NOME1 || "";
+                            var codGestor = row.CHAPASUBST && String(row.CHAPASUBST) !== "null" ? String(row.CHAPASUBST).trim() : "";
+                            var nomeGestor = row.NOME1 && String(row.NOME1) !== "null" ? String(row.NOME1).trim() : "";
                             
-                            if (codGestor && nomeGestor) {
+                            if (codGestor !== "" && nomeGestor !== "") {
                                 $("#gestor").val(codGestor + " - " + nomeGestor);
-                            } else if (nomeGestor) {
+                            } else if (nomeGestor !== "") {
                                 $("#gestor").val(nomeGestor);
-                            } else if (codGestor) {
+                            } else if (codGestor !== "") {
                                 $("#gestor").val(codGestor);
                             } else {
-                                $("#gestor").val("Gestor cadastrado, mas sem nome");
+                                $("#gestor").val("Gestor cadastrado sem nome ou código");
                             }
                         } else {
                             $("#gestor").val("Nenhum gestor encontrado na tabela");
                         }
-                    } else {
-                        $("#gestor").val("Colaborador sem Seção/Coligada");
-                    }
-                } catch(e) {
-                    console.error("Erro na busca do gestor: ", e);
-                    $("#gestor").val("Falha na execução");
+                    }, function(err) {
+                        console.error("Erro definitivo na requisição do gestor: ", err);
+                        $("#gestor").val("Falha de comunicação (401)");
+                    });
+                } else {
+                    $("#gestor").val("Colaborador sem Seção/Coligada");
                 }
             }, 150);
         }
@@ -811,19 +860,24 @@
             
             $("#txtCodSecaoOri").val("");
             $("#txtSecOrig").val("");
+            $("#txtCodFuncao, #CargoCol").val("");
+            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
         }
 
         if (removedItem.inputId == "dptoObraColab") {
             reloadZoomFilterValues("nomeColaborador", "");
             if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
             
-            // Limpa Dpto/Obra Atual se ele apagar
             $("#txtCodSecaoOri").val("");
             $("#txtSecOrig").val("");
+            $("#txtCodFuncao, #CargoCol").val("");
+            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
         }
 
         if (removedItem.inputId == "nomeColaborador") {
             $("#matricula, #cargo, #dataAdmissao, #estabilidade, #gestor, #tipoFuncionario, #codSituacao").val("");
+            $("#txtCodFuncao, #CargoCol").val("");
+            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
         }
         
         if (removedItem.inputId == "CodNovaSecao") {
