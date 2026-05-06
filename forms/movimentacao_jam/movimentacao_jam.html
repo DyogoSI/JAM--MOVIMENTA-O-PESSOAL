@@ -5,28 +5,22 @@
     <meta charset="utf-8">
     
     <link type="text/css" rel="stylesheet" href="/style-guide/css/fluig-style-guide.min.css"/>
+    
     <script type="text/javascript" src="/portal/resources/js/jquery/jquery.js"></script>
     <script type="text/javascript" src="/portal/resources/js/jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/portal/resources/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="/portal/resources/js/mustache/mustache-min.js"></script>
+    <script type="text/javascript" src="/style-guide/js/fluig-style-guide.min.js" charset="utf-8"></script>
     
     <script type="text/javascript" src="/webdesk/vcXMLRPC.js"></script>
+    <script type="text/javascript" src="fluigFormAttachment.min.js"></script>
     
     <style>
         /* =========================================
            RESET E BACKGROUND
         ========================================= */
         * { box-sizing: border-box; }
-        body, html { 
-            background: linear-gradient(135deg, #e6eef5 0%, #d5dfe8 100%) !important; 
-            min-height: 100vh; 
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif; 
-            margin: 0; padding: 0; 
-        }
+        body, html { background: #ffffff !important; min-height: 100vh; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
         form { padding: 40px 20px; max-width: 98%; margin: 0 auto; }
-
-        /* =========================================
-           SISTEMA DE GRID CUSTOMIZADO (FLEXBOX)
-        ========================================= */
         .container-fluid { width: 100%; }
         .row { display: flex; flex-wrap: wrap; margin-right: -15px; margin-left: -15px; }
         .col-md-2 { flex: 0 0 16.666667%; max-width: 16.666667%; padding: 0 15px; }
@@ -34,146 +28,83 @@
         .col-md-4 { flex: 0 0 33.333333%; max-width: 33.333333%; padding: 0 15px; }
         .col-md-5 { flex: 0 0 41.666667%; max-width: 41.666667%; padding: 0 15px; }
         .col-md-6 { flex: 0 0 50%; max-width: 50%; padding: 0 15px; }
+        .col-md-7 { flex: 0 0 58.333333%; max-width: 58.333333%; padding: 0 15px; }
         .col-md-8 { flex: 0 0 66.666667%; max-width: 66.666667%; padding: 0 15px; }
         .col-md-9 { flex: 0 0 75%; max-width: 75%; padding: 0 15px; }
+        .col-md-10 { flex: 0 0 83.333333%; max-width: 83.333333%; padding: 0 15px; }
         .col-md-12 { flex: 0 0 100%; max-width: 100%; padding: 0 15px; }
         .form-group { margin-bottom: 15px; width: 100%; }
-        
-        @media (max-width: 768px) {
-            .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-8, .col-md-9 { flex: 0 0 100%; max-width: 100%; }
-        }
-
-        /* =========================================
-           CABEÇALHO DA PÁGINA
-        ========================================= */
-        .page-header { 
-            background-color: #ffffff; padding: 25px; border-radius: 12px; 
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06); 
-            border-top: 6px solid #2C75B9; text-align: center; margin-bottom: 35px; border-bottom: none;
-        }
+        @media (max-width: 768px) { .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9, .col-md-10 { flex: 0 0 100%; max-width: 100%; } }
+        .page-header { background-color: #ffffff; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06); border-top: 6px solid #2C75B9; text-align: center; margin-bottom: 35px; border-bottom: none; }
         .page-header h2 { font-weight: 800; color: #F29620; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; font-size: 24px; }
-
-        /* =========================================
-           ESTILO DOS PAINÉIS E ÍCONES BRANCOS
-        ========================================= */
         .panel { border-radius: 12px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08); margin-bottom: 30px; background-color: #ffffff; overflow: hidden; display: block; width: 100%; border: none; }
-        
-        /* Cores de Fundo dos Painéis */
-        .panel-default > .panel-heading { background-color: #2C75B9; color: white; border: none; }
-        .panel-primary > .panel-heading { background-color: #2C75B9; color: white; border: none; }
-        #divAnalise .panel-heading { background-color: #F29620; color: white; border: none; }
-        #divReabertura .panel-heading { background-color: #1e5283; color: white; border: none; }
-        #painelAprovacao .panel-heading { background-color: #2C75B9; color: white; border: none; }
+        .panel-default > .panel-heading, .panel-primary > .panel-heading, #divReabertura .panel-heading { background-color: #2C75B9; color: white; border: none; }
+        .painel-obs-dinamico > .panel-heading { background-color: #F29620; color: white; border: none; transition: background-color 0.3s; }
+        .painel-correcao-dinamico > .panel-heading { background-color: #d9534f !important; color: white; border: none; transition: background-color 0.3s; }
+        .painel-bpo-dinamico > .panel-heading { background-color: #1e5283 !important; color: white; border: none; transition: background-color 0.3s; }
         
         .panel-heading { padding: 18px 25px; }
         .panel-title { font-size: 17px; font-weight: 700; color: #ffffff; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 1px; margin: 0; }
         .panel-body { padding: 30px 25px; }
-        
-        /* Ícones customizados em SVG */
-        .panel-title .fluigicon { 
-            margin-right: 10px; 
-            width: 18px; 
-            height: 18px; 
-            filter: brightness(0) invert(1); 
-            display: inline-block; 
-            background-size: contain; 
-            background-repeat: no-repeat; 
-            background-position: center; 
-        }
+        .panel-title .fluigicon { margin-right: 10px; width: 18px; height: 18px; filter: brightness(0) invert(1); display: inline-block; background-size: contain; background-repeat: no-repeat; background-position: center; }
         .panel-title .fluigicon::before { content: none !important; }
-        
         .fluigicon-user-config { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h274.9c-2.4-6.8-3.4-14-2.6-21.3l6.8-60.9 1.2-11.1 7.9-7.9 77.3-77.3c-24.5-27.7-60-45.5-99.9-45.5zm45.3 145.3l-6.8 61c-1.1 10.2 7.5 18.8 17.6 17.6l60.9-6.8 137.9-137.9-71.7-71.7-137.9 137.8zM633 268.9L595.1 231c-9.3-9.3-24.5-9.3-33.8 0l-37.8 37.8-4.1 4.1 71.8 71.7 41.8-41.8c9.3-9.4 9.3-24.5 0-33.9z"/></svg>'); }
         .fluigicon-user { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224 256c70.7 0 128-57.3 128-128S294.7 0 224 0 96 57.3 96 128s57.3 128 128 128zm89.6 32h-16.7c-22.2 10.2-46.9 16-72.9 16s-50.6-5.8-72.9-16h-16.7C60.2 288 0 348.2 0 422.4V464c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48v-41.6c0-74.2-60.2-134.4-134.4-134.4z"/></svg>'); }
         .fluigicon-form { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M104 96H56c-13.3 0-24 10.7-24 24v336c0 13.3 10.7 24 24 24h400c13.3 0 24-10.7 24-24V120c0-13.3-10.7-24-24-24h-48V16c0-8.8-7.2-16-16-16h-64c-8.8 0-16 7.2-16 16v80H216V16c0-8.8-7.2-16-16-16h-64c-8.8 0-16 7.2-16 16v80zM24 496c-13.2 0-24-10.8-24-24V120c0-13.2 10.8-24 24-24h48v32c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32v-32h160v32c0 17.7 14.3 32 32 32h64c17.7 0 32-14.3 32-32v-32h48c13.2 0 24 10.8 24 24v352c0 13.2-10.8 24-24 24H24zM160 264V240c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h48c13.3 0 24-10.7 24-24zm0 128v-24c0-13.3-10.7-24-24-24H88c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h48c13.3 0 24-10.7 24-24zm288-128v-24c0-13.3-10.7-24-24-24H200c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h224c13.3 0 24-10.7 24-24zm0 128v-24c0-13.3-10.7-24-24-24H200c-13.3 0-24 10.7-24 24v24c0 13.3 10.7 24 24 24h224c13.3 0 24-10.7 24-24z"/></svg>'); }
         .fluigicon-checked { background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z"/></svg>'); }
-
-        /* =========================================
-           FORMULÁRIOS, INPUTS E LABELS
-        ========================================= */
+        
         label { font-weight: 700; color: #2C75B9; margin-bottom: 5px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; }
-        
-        .form-control { 
-            border-radius: 6px !important; 
-            border: 1px solid #c0c6cc !important; 
-            padding: 6px 12px !important;
-            height: 36px !important; 
-            line-height: 1.42857143 !important;
-            font-size: 13px !important; 
-            color: #444 !important; 
-            transition: all 0.3s ease; 
-            display: block; 
-            width: 100%; 
-            background-color: #fff; 
-            box-sizing: border-box; 
-            font-family: inherit;
-        }
-        
+        .form-control { border-radius: 6px !important; border: 1px solid #c0c6cc !important; padding: 6px 12px !important; height: 36px !important; line-height: 1.42857143 !important; font-size: 13px !important; color: #444 !important; transition: all 0.3s ease; display: block; width: 100%; background-color: #fff; box-sizing: border-box; font-family: inherit; }
+        textarea.form-control { height: auto !important; min-height: 100px !important; resize: vertical; padding: 10px 12px !important; }
         select.form-control { appearance: auto; }
         .form-control:focus { border-color: #F29620; box-shadow: 0 0 0 3px rgba(242, 150, 32, 0.15); outline: none; }
         .form-control[readonly], .form-control[disabled] { background-color: #f4f6f9 !important; color: #7a828a !important; border-color: #e2e7ec !important; cursor: not-allowed; font-weight: 500; }
-
-        /* Estilo Checkbox customizado para as opções de Movimentação */
         .check-movimento { display: flex; align-items: center; margin-top: 15px; margin-bottom: 10px; }
         .check-movimento input { margin: 0; margin-right: 8px; width: 16px; height: 16px; cursor: pointer; }
         .check-movimento label { margin: 0; font-size: 13px; color: #444; text-transform: uppercase; font-weight: 700; cursor: pointer; }
-
-        /* =========================================
-           LUPA DO ZOOM: CENTRALIZADA E ISOLADA
-        ========================================= */
-        .input-group { 
-            display: flex !important; 
-            width: 100% !important; 
-            align-items: stretch !important; 
-            height: 36px !important; 
-        }
         
-        .input-group .form-control { 
-            border-top-right-radius: 0 !important; 
-            border-bottom-right-radius: 0 !important; 
-            flex: 1 !important; 
-            margin: 0 !important; 
-            z-index: 1; 
-            height: 36px !important; 
-        }
-        
+        /* LUPA E ZOOM */
+        .input-group { display: flex !important; width: 100% !important; align-items: stretch !important; height: 36px !important; }
+        .input-group .form-control { border-top-right-radius: 0 !important; border-bottom-right-radius: 0 !important; flex: 1 !important; margin: 0 !important; z-index: 1; height: 36px !important; }
         .input-group-addon .fluigicon { display: none !important; }
-
-        .input-group-addon { 
-            background-color: #f4f6f9 !important; 
-            border: 1px solid #c0c6cc !important; 
-            border-left: none !important; 
-            border-radius: 0 6px 6px 0 !important; 
-            width: 40px !important; 
-            height: 36px !important; 
-            cursor: pointer; 
-            box-sizing: border-box !important; 
-            padding: 0 !important; 
-            margin: 0 !important; 
-            
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16"><path fill="%232C75B9" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>') !important;
-            background-repeat: no-repeat !important;
-            background-position: center !important;
-            background-size: 16px !important;
+        .input-group-addon { background-color: #f4f6f9 !important; border: 1px solid #c0c6cc !important; border-left: none !important; border-radius: 0 6px 6px 0 !important; width: 40px !important; height: 36px !important; cursor: pointer; padding: 0 !important; margin: 0 !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="16" height="16"><path fill="%232C75B9" d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>') !important; background-repeat: no-repeat !important; background-position: center !important; background-size: 16px !important; }
+        .select2-container { width: 100% !important; }
+        .select2-container .select2-selection--single, .select2-container .select2-selection--multiple { min-height: 36px !important; height: 36px !important; border-radius: 6px !important; border: 1px solid #c0c6cc !important; padding: 0 8px !important; display: flex !important; align-items: center !important; background-color: #fff !important; overflow: hidden !important; }
+        .select2-container .select2-search--inline { float: none !important; margin: 0 !important; display: flex !important; align-items: center !important; }
+        .select2-container .select2-search--inline .select2-search__field { margin: 0 !important; height: 34px !important; line-height: 34px !important; font-size: 13px !important; padding-left: 4px !important; }
+        .select2-container .select2-selection__choice { margin: 0 !important; margin-right: 5px !important; padding: 2px 6px !important; font-size: 13px !important; border-radius: 4px !important; border: 1px solid #c0c6cc !important; background-color: #f4f6f9 !important; color: #1e5283 !important; font-weight: 600; }
+        .select2-container--default .select2-selection--single .select2-selection__rendered { line-height: normal !important; padding: 0 4px !important; font-size: 13px !important; color: #444 !important; width: 100%; }
+        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px !important; top: 1px !important; }
+        
+        /* =========================================
+           ESTILOS DOS ANEXOS E BOTÕES "INJETADOS"
+        ========================================= */
+        .caixa-anexo { background-color: #f8fafd; border: 2px dashed #b1c8df; border-radius: 10px; padding: 20px; margin-top: 15px; }
+        .caixa-anexo label { color: #1e5283 !important; font-size: 14px; display: block; margin-bottom: 10px; }
+        .fluigFormAttachmentComponent { display: flex; width: 100%; gap: 8px; align-items: center; }
+        .fluigFormAttachmentComponent input { flex: 1; min-width: 0; }
+        .fluigFormAttachmentComponent_buttons { flex-shrink: 0; display: flex; gap: 5px; }
+        
+        .fluigFormAttachmentComponent_buttons .btn i { display: none !important; }
+        .fluigFormAttachmentComponent_buttons .btn, .btn-anexo-historico {
+            width: 32px !important; height: 32px !important;
+            background-repeat: no-repeat !important; background-position: center !important; background-size: 14px !important;
+            padding: 0 !important; border-radius: 4px !important; transition: all 0.2s ease; cursor: pointer;
         }
         
-        /* Ajustes Select2 */
-        .select2-container { width: 100% !important; }
-        .select2-container .select2-selection--single { 
-            height: 36px !important; 
-            border-radius: 6px !important; 
-            border: 1px solid #c0c6cc !important; 
-            padding: 6px 12px !important; 
-            display: flex !important;
-            align-items: center !important;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered { 
-            line-height: normal !important;
-            padding: 0 !important; 
-            font-size: 13px !important; 
-            color: #444 !important; 
-            width: 100%;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow { height: 34px !important; top: 1px !important; }
+        .fluigFormAttachmentBtnDeleteFile { background-color: #d9534f !important; border: 1px solid #d43f3a !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="%23ffffff" d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/></svg>') !important; }
+        .fluigFormAttachmentBtnUploadFile { background-color: #5cb85c !important; border: 1px solid #4cae4c !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="%23ffffff" d="M364.2 83.8c-24.4-24.4-64-24.4-88.4 0l-184 184c-42.1 42.1-42.1 110.3 0 152.4s110.3 42.1 152.4 0l152-152c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-152 152c-64 64-167.6 64-231.6 0s-64-167.6 0-231.6l184-184c46.3-46.3 121.3-46.3 167.6 0s46.3 121.3 0 167.6l-176 176c-28.6 28.6-75 28.6-103.6 0s-28.6-75 0-103.6l144-144c10.9-10.9 28.7-10.9 39.6 0s10.9 28.7 0 39.6l-144 144c-6.7 6.7-6.7 17.7 0 24.4s17.7 6.7 24.4 0l176-176c24.4-24.4 24.4-64 0-88.4z"/></svg>') !important; }
+        .fluigFormAttachmentBtnViewerFile, .btn-anexo-historico { background-color: #5bc0de !important; border: 1px solid #46b8da !important; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="%23ffffff" d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.4 78.1-95.4 92.9-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.8-35.7-46.1-87.7-92.9-131.1C433.5 68.8 368.8 32 288 32zM128 256a160 160 0 1 1 320 0 160 160 0 1 1 -320 0zm160 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"/></svg>') !important; }
+        
+        .label-obrigatorio::after { content: " *"; color: #d9534f; font-weight: bold; }
+        
+        /* Estilos da nova Timeline (Container Cronológico) */
+        #historico-timeline { display: flex; flex-direction: column; gap: 25px; margin-top: 30px; margin-bottom: 30px; }
+        /* Oculta a tabela original (Pai x Filho) para não ocupar espaço na tela */
+        .tabelas-ocultas { height: 0px; overflow: hidden; visibility: hidden; }
+        
+        /* Ajuste do checkbox no modo de visualização para ficar visível se marcado */
+        input[type="checkbox"][disabled]:checked { opacity: 1; accent-color: #4cae4c; }
     </style>
 </head>
 <body>
@@ -192,14 +123,20 @@
         <input type="hidden" id="NROFICHAREG" name="NROFICHAREG" />
         <input type="hidden" id="CODRECEBIMENTO" name="CODRECEBIMENTO" />
         <input type="hidden" id="CodFilialDestino" name="CodFilialDestino" />
-
+        
+        <!-- VARIÁVEIS OCULTAS -->
+        <input type="text" id="cpRespGestor2" name="cpRespGestor2" style="display:none;" />
+        <input type="text" id="cpDecisaoRH" name="cpDecisaoRH" style="display:none;" />
+        <input type="text" id="cpParecercol2" name="cpParecercol2" style="display:none;" />
+        <input type="text" id="cpFlagNovaRodada" name="cpFlagNovaRodada" style="display:none;" />
+        
         <div class="container-fluid">
             
             <div class="page-header">
                 <h2>MOVIMENTAÇÃO DE PESSOAL</h2>
             </div>
-
-            <div class="panel panel-default">
+            
+            <div class="panel panel-default" id="painelSolicitante">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fluigicon fluigicon-user-config fluigicon-sm"></i> Dados do Solicitante</h3>
                 </div>
@@ -220,8 +157,8 @@
                     </div>
                 </div>
             </div>
-
-            <div class="panel panel-primary">
+            
+            <div class="panel panel-primary" id="painelColaborador">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fluigicon fluigicon-user fluigicon-sm"></i> Dados do Colaborador</h3>
                 </div>
@@ -278,52 +215,59 @@
                                            {'field':'CODFILIAL', 'visible':'false'},
                                            {'field':'CODSECAO', 'visible':'false'},
                                            {'field':'CODFUNCAO', 'visible':'false'},
+                                           {'field':'CBO2002', 'visible':'false'},
                                            {'field':'CODHORARIO', 'visible':'false'},
                                            {'field':'HORARIO', 'visible':'false'},
                                            {'field':'INDINICIOHOR', 'visible':'false'},
-                                           {'field':'COLUMN1', 'visible':'false'}
+                                           {'field':'COLUMN1', 'visible':'false'},
+                                           {'field':'SALARIO', 'visible':'false'},
+                                           {'field':'JORNADAMENSAL', 'visible':'false'}
                                        ]
                                    }" class="form-control" />
                         </div>
                     </div>
                     
                     <div class="row">
-                        <div class="col-md-3 form-group">
-                            <label for="dataAdmissao">Data da Admissão</label>
-                            <input type="text" class="form-control" name="dataAdmissao" id="dataAdmissao" readonly>
-                        </div>
-                        <div class="col-md-3 form-group">
-                            <label for="cargo">Cargo Atual</label>
-                            <input type="text" class="form-control" name="cargo" id="cargo" readonly>
-                        </div>
-                        <div class="col-md-3 form-group">
+                        <div class="col-md-2 form-group">
                             <label for="matricula">Matrícula</label>
                             <input type="text" class="form-control" name="matricula" id="matricula" readonly>
                         </div>
                         <div class="col-md-3 form-group">
-                            <label for="estabilidade">Estabilidade</label>
-                            <input type="text" class="form-control" name="estabilidade" id="estabilidade" readonly>
+                            <label for="dataAdmissao">Data da Admissão</label>
+                            <input type="text" class="form-control" name="dataAdmissao" id="dataAdmissao" readonly>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="cargo">Cargo Atual</label>
+                            <input type="text" class="form-control" name="cargo" id="cargo" readonly>
+                        </div>
+                        <div class="col-md-3 form-group">
+                            <label for="salarioColaborador">Salário</label>
+                            <input type="text" class="form-control" name="salarioColaborador" id="salarioColaborador" readonly>
                         </div>
                     </div>
                     
                     <div class="row">
                         <div class="col-md-4 form-group">
-                            <label for="gestor">Gestor</label>
-                            <input type="text" class="form-control" name="gestor" id="gestor" readonly>
+                            <label for="horarioColaborador">Horário</label>
+                            <input type="text" class="form-control" name="horarioColaborador" id="horarioColaborador" readonly>
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-2 form-group">
                             <label for="tipoFuncionario">Tipo Funcionário</label>
                             <input type="text" class="form-control" name="tipoFuncionario" id="tipoFuncionario" readonly>
                         </div>
-                        <div class="col-md-4 form-group">
+                        <div class="col-md-2 form-group">
                             <label for="codSituacao">Situação</label>
                             <input type="text" class="form-control" name="codSituacao" id="codSituacao" readonly>
+                        </div>
+                        <div class="col-md-4 form-group">
+                            <label for="gestor">Gestor</label>
+                            <input type="text" class="form-control" name="gestor" id="gestor" readonly>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="panel panel-default">
+            <div class="panel panel-default" id="painelMovimentacoes">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fluigicon fluigicon-form fluigicon-sm"></i> MOVIMENTAÇÕES</h3>
                 </div>
@@ -338,28 +282,37 @@
                         <div class="col-md-3 check-movimento"><label><input type="checkbox" id="Ckb5" name="Ckb5" /> Salário</label></div>
                     </div>
 
+                    <div id="blocoDataMudanca" style="display: none; margin-bottom: 25px; margin-top: 15px;">
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="dtMudanca" class="label-obrigatorio">Data da Mudança (Coloque o dia)</label>
+                                <input type="date" name="dtMudanca" id="dtMudanca" class="form-control" style="border-color: #2C75B9; box-shadow: 0 0 5px rgba(44, 117, 185, 0.2);">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- ABA: DEPARTAMENTO / OBRA -->
                     <div class="NovaSecao" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
-                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Departamento/Obra</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="color: #F29620; font-weight: 700; margin: 0; text-transform: uppercase; font-size: 13px;">Alteração de Departamento/Obra</h4>
+                            <div class="checkbox-validacao-bpo" style="display: none;">
+                                <label style="color: #4cae4c; font-weight: bold; margin: 0; cursor: pointer;">
+                                    <input type="checkbox" name="validaSecaoBPO" id="validaSecaoBPO" value="SIM" style="width: 14px; height: 14px; margin: 0 5px 0 0; vertical-align: middle;"> Validação BPO
+                                </label>
+                            </div>
+                        </div>
                         
                         <input type="hidden" name="txtSecOrig" id="txtSecOrig">
                         <input type="hidden" name="DesNovaSecao" id="DesNovaSecao">
                         <input type="hidden" name="codGestorDestino" id="codGestorDestino">
                         <input type="hidden" name="cpNovoGestor" id="cpNovoGestor">
-                        <input type="hidden" name="txtCodMotivoSecao" id="txtCodMotivoSecao">
 
                         <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Dpto/Obra Atual</label>
                                 <input type="text" name="txtCodSecaoOri" id="txtCodSecaoOri" class="form-control" readonly>
                             </div>
-                            <div class="col-md-6 form-group">
-                                <label>Data da Mudança</label>
-                                <input type="date" name="dtMudancaSecao" id="dtMudancaSecao" class="form-control NovaSecao">
-                            </div>
-                        </div>
-                        
-                        <div class="row">
                             <div class="col-md-6 form-group">
                                 <label>Novo Dpto/Obra</label>
                                 <input type="zoom" id="CodNovaSecao" name="CodNovaSecao" class="form-control NovaSecao"
@@ -376,163 +329,252 @@
                                            ]
                                        }" />
                             </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 form-group">
+                                <label>Cód. Motivo Alteração</label>
+                                <input type="text" name="txtCodMotivoSecao" id="txtCodMotivoSecao" class="form-control NovaSecao" readonly>
+                            </div>
                             <div class="col-md-6 form-group">
                                 <label>Motivo da Alteração</label>
-                                <div class="input-group">
-                                    <input type="text" name="txtMotivoSecao" id="txtMotivoSecao" class="form-control NovaSecao" readonly placeholder="Pesquise o motivo da alteração...">
-                                    <div class="input-group-addon" id="addMotivoSecao"></div>
-                                </div>
+                                <input type="zoom" id="txtMotivoSecao" name="txtMotivoSecao" class="form-control NovaSecao"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_motivoSecao',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise o motivo da alteração...',
+                                           'fields':[
+                                               {'field':'DESCRICAO', 'label':'Motivo', 'standard':'true', 'search':'true'},
+                                               {'field':'CODINTERNO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                         </div>
                     </div>
-
+                    
+                    <!-- ABA: FUNÇÃO -->
                     <div class="NovaFuncao" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
-                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Função</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="color: #F29620; font-weight: 700; margin: 0; text-transform: uppercase; font-size: 13px;">Alteração de Função</h4>
+                            <div class="checkbox-validacao-bpo" style="display: none;">
+                                <label style="color: #4cae4c; font-weight: bold; margin: 0; cursor: pointer;">
+                                    <input type="checkbox" name="validaFuncaoBPO" id="validaFuncaoBPO" value="SIM" style="width: 14px; height: 14px; margin: 0 5px 0 0; vertical-align: middle;"> Validação BPO
+                                </label>
+                            </div>
+                        </div>
                         
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label>Cód. Função Atual</label>
                                 <input type="text" name="txtCodFuncao" id="txtCodFuncao" class="form-control" readonly>
                             </div>
-                            <div class="col-md-5 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Descrição da Função Atual</label>
                                 <input type="text" name="CargoCol" id="CargoCol" class="form-control" readonly>
                             </div>
                             <div class="col-md-3 form-group">
-                                <label>Data da Mudança</label>
-                                <input type="date" name="dtMudancaFuncao" id="dtMudancaFuncao" class="form-control NovaFuncao">
+                                <label>CBO Atual</label>
+                                <input type="text" name="cboFuncaoAtual" id="cboFuncaoAtual" class="form-control" readonly>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-3 form-group">
                                 <label>Cód. Nova Função</label>
-                                <div class="input-group">
-                                    <input type="text" name="txtNovoCodFuncao" id="txtNovoCodFuncao" class="form-control NovaFuncao" readonly>
-                                    <div class="input-group-addon" id="addFuncao"></div>
-                                </div>
+                                <input type="text" name="txtNovoCodFuncao" id="txtNovoCodFuncao" class="form-control NovaFuncao" readonly>
                             </div>
-                            <div class="col-md-8 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Descrição da Nova Função</label>
-                                <input type="text" name="txtNovoFuncao" id="txtNovoFuncao" class="form-control NovaFuncao" readonly>
+                                <input type="zoom" id="txtNovoFuncao" name="txtNovoFuncao" class="form-control NovaFuncao"
+                                       data-zoom="{
+                                           'displayKey':'NOME',
+                                           'datasetId':'ds_funcao',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise pelo nome da função...',
+                                           'fields':[
+                                               {'field':'NOME', 'label':'Função', 'standard':'true', 'search':'true'},
+                                               {'field':'CODIGO', 'visible':'false'},
+                                               {'field':'CBO2002', 'visible':'false'},
+                                               {'field':'DESCRICAO', 'visible':'false'}
+                                           ]
+                                       }" />
+                            </div>
+                            <div class="col-md-3 form-group">
+                                <label>CBO da Nova Função</label>
+                                <input type="text" name="cboNovaFuncao" id="cboNovaFuncao" class="form-control NovaFuncao" readonly>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Cód. Motivo Alteração</label>
-                                <div class="input-group">
-                                    <input type="text" name="txtCodMotivoFuncao" id="txtCodMotivoFuncao" class="form-control NovaFuncao" readonly>
-                                    <div class="input-group-addon" id="addMotivoFuncao"></div>
-                                </div>
+                                <input type="text" name="txtCodMotivoFuncao" id="txtCodMotivoFuncao" class="form-control NovaFuncao" readonly>
                             </div>
-                            <div class="col-md-8 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Motivo da Alteração</label>
-                                <input type="text" name="txtMotivoFuncao" id="txtMotivoFuncao" class="form-control NovaFuncao">
+                                <input type="zoom" id="txtMotivoFuncao" name="txtMotivoFuncao" class="form-control NovaFuncao"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_motivoFuncao',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise o motivo da alteração...',
+                                           'fields':[
+                                               {'field':'DESCRICAO', 'label':'Motivo', 'standard':'true', 'search':'true'},
+                                               {'field':'CODINTERNO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                         </div>
                     </div>
-
+                    
+                    <!-- ABA: HORÁRIO -->
                     <div class="NovoHorario" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
-                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Horário</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="color: #F29620; font-weight: 700; margin: 0; text-transform: uppercase; font-size: 13px;">Alteração de Horário</h4>
+                            <div class="checkbox-validacao-bpo" style="display: none;">
+                                <label style="color: #4cae4c; font-weight: bold; margin: 0; cursor: pointer;">
+                                    <input type="checkbox" name="validaHorarioBPO" id="validaHorarioBPO" value="SIM" style="width: 14px; height: 14px; margin: 0 5px 0 0; vertical-align: middle;"> Validação BPO
+                                </label>
+                            </div>
+                        </div>
                         
                         <input type="hidden" name="CpIndiceHorario" id="CpIndiceHorario">
-                        <input type="hidden" name="txtCodMotivoHorario" id="txtCodMotivoHorario">
 
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label>Cód. Horário Atual</label>
                                 <input type="text" name="CodHorAtual" id="CodHorAtual" class="form-control" readonly>
                             </div>
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Descrição do Horário Atual</label>
                                 <input type="text" name="DescHoraAtual" id="DescHoraAtual" class="form-control" readonly>
                             </div>
-                            <div class="col-md-2 form-group">
+                            <div class="col-md-3 form-group">
                                 <label>Índice Atual</label>
                                 <input type="text" name="IndiceAtual" id="IndiceAtual" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <label>Data da Mudança</label>
-                                <input type="date" name="dtMudancaHorario" id="dtMudancaHorario" class="form-control NovoHorario">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label>Cód. Novo Horário</label>
-                                <div class="input-group">
-                                    <input type="text" name="CpNovoCodHorario" id="CpNovoCodHorario" class="form-control NovoHorario" readonly>
-                                    <div class="input-group-addon" id="addHorario"></div>
-                                </div>
+                                <input type="text" name="CpNovoCodHorario" id="CpNovoCodHorario" class="form-control NovoHorario" readonly>
                             </div>
                             <div class="col-md-6 form-group">
                                 <label>Descrição do Novo Horário</label>
-                                <input type="text" name="CpNovoHorario" id="CpNovoHorario" class="form-control NovoHorario" readonly>
+                                <input type="zoom" id="CpNovoHorario" name="CpNovoHorario" class="form-control NovoHorario"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_horarios',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise pelo horário...',
+                                           'fields':[
+                                               {'field':'DESCRICAO', 'label':'Horário', 'standard':'true', 'search':'true'},
+                                               {'field':'CODIGO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                             <div class="col-md-3 form-group">
                                 <label>Novo Índice</label>
-                                <div class="input-group">
-                                    <input type="text" name="CpIndiceCodHorario" id="CpIndiceCodHorario" class="form-control NovoHorario" readonly placeholder="Pesquise...">
-                                    <div class="input-group-addon" id="addIndHorario"></div>
-                                </div>
+                                <input type="zoom" id="CpIndiceCodHorario" name="CpIndiceCodHorario" class="form-control NovoHorario"
+                                       data-zoom="{
+                                           'displayKey':'INDINICIOHOR',
+                                           'datasetId':'ds_indiceHorarios',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Índice...',
+                                           'fields':[
+                                               {'field':'INDINICIOHOR', 'label':'Índice', 'standard':'true', 'search':'true'},
+                                               {'field':'DESCRICAO', 'label':'Descrição', 'search':'true'},
+                                               {'field':'CODHORARIO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-12 form-group">
+                            <div class="col-md-6 form-group">
+                                <label>Cód. Motivo Alteração</label>
+                                <input type="text" name="txtCodMotivoHorario" id="txtCodMotivoHorario" class="form-control NovoHorario" readonly>
+                            </div>
+                            <div class="col-md-6 form-group">
                                 <label>Motivo da Alteração</label>
-                                <div class="input-group">
-                                    <input type="text" name="txtMotivoHorario" id="txtMotivoHorario" class="form-control NovoHorario" readonly placeholder="Pesquise o motivo da alteração...">
-                                    <div class="input-group-addon" id="addMotivoHorario"></div>
-                                </div>
+                                <input type="zoom" id="txtMotivoHorario" name="txtMotivoHorario" class="form-control NovoHorario"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_motivoSecao',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise o motivo da alteração...',
+                                           'fields':[
+                                               {'field':'DESCRICAO', 'label':'Motivo', 'standard':'true', 'search':'true'},
+                                               {'field':'CODINTERNO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                         </div>
                     </div>
-
+                    
+                    <!-- ABA: SALÁRIO -->
                     <div class="NovoSalario" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
-                        <h4 style="color: #F29620; font-weight: 700; margin-bottom: 15px; text-transform: uppercase; font-size: 13px;">Alteração de Salário</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h4 style="color: #F29620; font-weight: 700; margin: 0; text-transform: uppercase; font-size: 13px;">Alteração de Salário</h4>
+                            <div class="checkbox-validacao-bpo" style="display: none;">
+                                <label style="color: #4cae4c; font-weight: bold; margin: 0; cursor: pointer;">
+                                    <input type="checkbox" name="validaSalarioBPO" id="validaSalarioBPO" value="SIM" style="width: 14px; height: 14px; margin: 0 5px 0 0; vertical-align: middle;"> Validação BPO
+                                </label>
+                            </div>
+                        </div>
                         
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Salário Atual</label>
                                 <input type="text" name="Salario" id="Salario" class="form-control" readonly>
                             </div>
-                            <div class="col-md-5 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Jornada Mensal Atual</label>
                                 <input type="text" name="cpJornadaMensal" id="cpJornadaMensal" class="form-control" readonly>
                                 <input type="hidden" name="cpJornadaFormatada" id="cpJornadaFormatada" />
                             </div>
-                            <div class="col-md-3 form-group">
-                                <label>Data da Mudança</label>
-                                <input type="date" name="dtMudancaSalario" id="dtMudancaSalario" class="form-control NovoSalario">
-                            </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Novo Salário</label>
-                                <div class="input-group">
-                                    <input type="text" name="NovoSalario" id="NovoSalario" class="form-control Valor NovoSalario" readonly>
-                                    <div class="input-group-addon" id="addSalario"></div>
-                                </div>
+                                <input type="text" name="NovoSalario" id="NovoSalario" class="form-control Valor NovoSalario" placeholder="R$ 0.000,00">
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label>Nova Jornada Mensal</label>
+                                <input type="text" name="cpNovaJornadaMensal" id="cpNovaJornadaMensal" class="form-control NovoSalario" placeholder="000:00" maxlength="6">
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-4 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Cód. Motivo Alteração</label>
-                                <div class="input-group">
-                                    <input type="text" name="txtCodMotivoSalario" id="txtCodMotivoSalario" class="form-control NovoSalario" readonly>
-                                    <div class="input-group-addon" id="addMotivoSalario"></div>
-                                </div>
+                                <input type="text" name="txtCodMotivoSalario" id="txtCodMotivoSalario" class="form-control NovoSalario" readonly>
                             </div>
-                            <div class="col-md-8 form-group">
+                            <div class="col-md-6 form-group">
                                 <label>Motivo da Alteração</label>
-                                <input type="text" name="txtMotivoSalario" id="txtMotivoSalario" class="form-control NovoSalario">
+                                <input type="zoom" id="txtMotivoSalario" name="txtMotivoSalario" class="form-control NovoSalario"
+                                       data-zoom="{
+                                           'displayKey':'DESCRICAO',
+                                           'datasetId':'ds_motivoSalario',
+                                           'maximumSelectionLength':'1',
+                                           'placeholder':'Pesquise o motivo da alteração...',
+                                           'fields':[
+                                               {'field':'DESCRICAO', 'label':'Motivo', 'standard':'true', 'search':'true'},
+                                               {'field':'CODINTERNO', 'visible':'false'},
+                                               {'field':'CODCOLIGADA', 'visible':'false'}
+                                           ]
+                                       }" />
                             </div>
                         </div>
                     </div>
@@ -540,35 +582,122 @@
                 </div>
             </div>
 
-            <div class="panel panel-info" id="divAnalise">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fluigicon fluigicon-checked fluigicon-sm"></i> Resposta RH</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label for="cpRespGestor2">Analista Responsável (RH)</label>
-                            <input type="text" name="cpRespGestor2" id="cpRespGestor2" class="form-control" readonly />
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label for="cpDecisaoRH">Decisão</label>
-                            <select name="cpDecisaoRH" id="cpDecisaoRH" class="form-control">
-                                <option value="">Selecione...</option>
-                                <option value="Correto">Enviar solução</option>
-                                <option value="Incorreto">Devolver para o solicitante</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 form-group">
-                            <label for="cpParecercol2">Parecer do RH</label>
-                            <textarea class="form-control" rows="3" name="cpParecercol2" id="cpParecercol2" placeholder="Escreva observações ou os motivos da devolução..."></textarea>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- TIMELINE LIMPA: Aqui os painéis preenchidos serão injetados -->
+            <div id="historico-timeline"></div>
 
-            <div class="panel panel-primary" id="divReabertura">
+            <!-- TABELA ORIGINAL OCULTA: Serve apenas para gravar os dados Pai x Filho -->
+            <div class="tabelas-ocultas">
+                <table class="table" tablename="tbInteracoes" id="tbInteracoes" noaddbutton="true" nodeletebutton="true" style="border:none; margin:0; padding:0; width:100%;">
+                    <thead><tr class="hide"><th></th></tr></thead>
+                    <tbody>
+                        <tr>
+                            <td class="td-interacao" style="border:none; padding:0;">
+                                 
+                                <input type="text" name="tipoInteracao" id="tipoInteracao" style="display:none;" />
+                                 
+                                <!-- DIV 1: PAINEL SOLICITANTE INICIAL -->
+                                <div class="panel panel-default painel-obs-dinamico painel-solicitante-dinamico" style="margin-bottom: 30px;">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            <i class="fluigicon fluigicon-form fluigicon-sm"></i>
+                                            <span class="titulo-painel-solicitante">Observações e Anexos</span>
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>Observações Gerais</label>
+                                                <textarea class="form-control" rows="4" name="cpObservacoesGerais_tb" id="cpObservacoesGerais_tb" placeholder="Insira aqui observações adicionais..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row row-anexo-interno">
+                                            <div class="col-md-12">
+                                                <div class="caixa-anexo">
+                                                    <label><span class="fluigicon fluigicon-paperclip"></span> Documento Anexo</label>
+                                                    <div class="fluigFormAttachmentComponent">
+                                                        <input type="text" class="form-control" readonly name="cpAnexoGeral_tb" id="cpAnexoGeral_tb" data-filename="Anexo_Geral_Mov" data-accept="*">
+                                                        <div class="fluigFormAttachmentComponent_buttons area-botoes-anexo" style="display:none;">
+                                                            <button type="button" class="btn-anexo-historico btn-visualizar-injetado" title="Visualizar Anexo" style="display:none;"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 
+                                <!-- DIV 2: PAINEL BPO (OPERAÇÃO IRHO) -->
+                                <div class="panel panel-info painel-bpo-dinamico" style="margin-bottom: 30px;">
+                                    <div class="panel-heading">
+                                        <h3 class="panel-title">
+                                            <i class="fluigicon fluigicon-checked fluigicon-sm"></i>
+                                            <span class="titulo-painel-bpo">Operação IRHO</span>
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-6 form-group">
+                                                <label>Analista Responsável (BPO)</label>
+                                                <input type="text" name="cpRespGestor2_tb" id="cpRespGestor2_tb" class="form-control" readonly />
+                                            </div>
+                                            <div class="col-md-6 form-group">
+                                                <label>Decisão</label>
+                                                <select name="cpDecisaoRH_tb" id="cpDecisaoRH_tb" class="form-control" onchange="$('#cpDecisaoRH').val(this.value); tratarAcaoBPO(this);">
+                                                    <option value="">Selecione...</option>
+                                                    <option value="Correto">Enviar solução</option>
+                                                    <option value="Incorreto">Devolver para o solicitante</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <!-- Nova Div englobando o Parecer para Ocultar/Mostrar -->
+                                        <div class="row linha-parecer-bpo" style="display: none;">
+                                            <div class="col-md-12 form-group">
+                                                <label>Parecer do BPO</label>
+                                                <textarea class="form-control" rows="3" name="cpParecercol2_tb" id="cpParecercol2_tb" onkeyup="$('#cpParecercol2').val(this.value)" onchange="$('#cpParecercol2').val(this.value)" placeholder="Escreva observações ou os motivos da devolução..."></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                 
+                                <!-- DIV 3: PAINEL CORREÇÃO -->
+                                <div class="panel panel-danger painel-correcao-dinamico" style="margin-bottom: 30px;">
+                                    <div class="panel-heading" style="background-color: #d9534f !important; color: white; border: none;">
+                                        <h3 class="panel-title">
+                                            <i class="fluigicon fluigicon-form fluigicon-sm"></i>
+                                            <span class="titulo-painel-correcao">Correção</span>
+                                        </h3>
+                                    </div>
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-12 form-group">
+                                                <label>Observações da Correção</label>
+                                                <textarea class="form-control" rows="4" name="cpObservacoesCorrecao_tb" id="cpObservacoesCorrecao_tb" placeholder="Insira as observações sobre a correção..."></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="row row-anexo-interno">
+                                            <div class="col-md-12">
+                                                <div class="caixa-anexo">
+                                                    <label><span class="fluigicon fluigicon-paperclip"></span> Documento Anexo (Correção)</label>
+                                                    <div class="fluigFormAttachmentComponent">
+                                                        <input type="text" class="form-control" readonly name="cpAnexoCorrecao_tb" id="cpAnexoCorrecao_tb" data-filename="Anexo_Correcao_Mov" data-accept="*">
+                                                        <div class="fluigFormAttachmentComponent_buttons area-botoes-anexo" style="display:none;">
+                                                            <button type="button" class="btn-anexo-historico btn-visualizar-injetado" title="Visualizar Anexo" style="display:none;"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> <!-- Fim Tabela Oculta -->
+            
+            <!-- AÇÃO SOLICITANTE FINAL -->
+            <div class="panel panel-primary" id="divReabertura" style="display: none;">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fluigicon fluigicon-form fluigicon-sm"></i> Ação Solicitante</h3>
                 </div>
@@ -579,7 +708,7 @@
                             <select class="form-control" name="cpReaberturaChamado" id="cpReaberturaChamado">
                                 <option value="">Selecione...</option>
                                 <option value="2">Finalizar Solicitação</option>
-                                <option value="1">Reencaminhar para o RH</option>
+                                <option value="1">Reencaminhar para o BPO</option>
                                 <option value="3">Cancelar Solicitação</option>
                             </select>
                         </div>
@@ -592,301 +721,553 @@
                     </div>
                 </div>
             </div>
-
-            <div class="panel panel-info" id="painelAprovacao">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><i class="fluigicon fluigicon-checked fluigicon-sm"></i> Aprovação</h3>
-                </div>
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-md-6 form-group">
-                            <label for="cpAprovador">Aprovador</label>
-                            <input type="text" name="cpAprovador" id="cpAprovador" class="form-control" readonly />
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label for="cpDecisaoAprovacao">Decisão</label>
-                            <select name="cpDecisaoAprovacao" id="cpDecisaoAprovacao" class="form-control">
-                                <option value="">Selecione...</option>
-                                <option value="Aprovado">Aprovado</option>
-                                <option value="Reprovado">Reprovado</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+            
         </div>
     </form>
 
 <script type="text/javascript">
     $(document).ready(function() {
-        // Bloqueia os zooms dependentes no carregamento inicial
+        
         setTimeout(function() {
             if(window["dptoObraColab"]) window["dptoObraColab"].disable(true);
-            if(window["nomeColaborador"]) window["nomeColaborador"].disable(true); 
-            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(true); 
-        }, 500);
-
-        // ========================================================
-        // LOGICA DE EXIBIR E OCULTAR PAINÉIS DOS CHECKBOXES
-        // ========================================================
-        function configurarToggleCheckbox(idCheckbox, classeAlvo) {
-            var $checkbox = $('#' + idCheckbox);
-            var $alvo = $('.' + classeAlvo);
+            if(window["nomeColaborador"]) window["nomeColaborador"].disable(true);
+            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(true);
+            if(window["CpIndiceCodHorario"]) window["CpIndiceCodHorario"].disable(true);
             
-            // Verifica estado inicial ao abrir a página
-            if($checkbox.is(':checked')) {
-                $alvo.show();
-            } else {
-                $alvo.hide();
+            var atvAtual = (typeof ATIVIDADE_ATUAL !== 'undefined') ? ATIVIDADE_ATUAL : 0;
+            var modo = (typeof MODO_FORMULARIO !== 'undefined') ? MODO_FORMULARIO : 'ADD';
+            
+            // Exibe a Flag de Validação caso esteja com o BPO (Atividade 4) ou Histórico (VIEW)
+            if (atvAtual >= 4 || modo === "VIEW") {
+                $('.checkbox-validacao-bpo').show();
+            }
+
+            // Oculta a lixeira padrão do pai-filho
+            $(".fluigicon-trash").hide();
+            
+            // CONSTRUÇÃO LÓGICA DO HISTÓRICO (Ignorado em Modo Visualização)
+            if (modo !== "VIEW") {
+                var rows = $("input[id*='tipoInteracao___']");
+                var totalRows = rows.length;
+                var lastType = totalRows > 0 ? rows.last().val() : "";
+
+                if (atvAtual == 0 || atvAtual == 3) {
+                    if (totalRows === 0) adicionarInteracao("SOLICITANTE");
+                } 
+                else if (atvAtual == 4) {
+                    if (lastType !== "BPO") adicionarInteracao("BPO");
+                } 
+                else if (atvAtual == 6) {
+                    if (lastType !== "CORRECAO") adicionarInteracao("CORRECAO");
+                }
             }
             
-            // Verifica o estado toda vez que ocorre uma alteração
+            // Exibe Ação Solicitante no fim
+            if (atvAtual == 11 && modo !== "VIEW") {
+                $("#divReabertura").show();
+            } else {
+                $("#divReabertura").hide();
+            }
+            
+            // PRIMEIRO: Congela a linha do Solicitante enquanto ela ainda existe na tabela Pai x Filho
+            aplicarCongelamento();
+
+            // SEGUNDO: Recorta o painel já congelado e injeta na Timeline cronológica
+            restaurarEstilosPaineisDeObservacao();
+
+        }, 1200);
+
+        if (!$("#dtMudanca").val()) {
+            var dataAtual = new Date();
+            var ano = dataAtual.getFullYear();
+            var mes = ("0" + (dataAtual.getMonth() + 1)).slice(-2);
+            $("#dtMudanca").val(ano + "-" + mes + "-01");
+        }
+
+        var $cb1 = $('#Ckb1'), $cb2 = $('#Ckb2'), $cb3 = $('#Ckb3'), $cb5 = $('#Ckb5');
+        var $blocoData = $('#blocoDataMudanca');
+
+        function atualizarDataMudanca() {
+            if ($cb1.is(':checked')) { $blocoData.insertAfter('.NovaSecao hr').slideDown(300); }
+            else if ($cb2.is(':checked')) { $blocoData.insertAfter('.NovaFuncao hr').slideDown(300); }
+            else if ($cb3.is(':checked')) { $blocoData.insertAfter('.NovoHorario hr').slideDown(300); }
+            else if ($cb5.is(':checked')) { $blocoData.insertAfter('.NovoSalario hr').slideDown(300); }
+            else {
+                $blocoData.slideUp(300, function() {
+                    var dataAtual = new Date();
+                    var ano = dataAtual.getFullYear();
+                    var mes = ("0" + (dataAtual.getMonth() + 1)).slice(-2);
+                    $('#dtMudanca').val(ano + "-" + mes + "-01");
+                });
+            }
+        }
+
+        function configurarToggleCheckbox($checkbox, classeAlvo) {
+            var $alvo = $('.' + classeAlvo);
+            if($checkbox.is(':checked')) { $alvo.show(); } else { $alvo.hide(); }
+            
             $checkbox.on('change', function() {
-                if($(this).is(':checked')) {
-                    $alvo.slideDown(300);
-                } else {
-                    $alvo.slideUp(300);
-                }
+                if($(this).is(':checked')) { $alvo.slideDown(300); } else { $alvo.slideUp(300); }
+                atualizarDataMudanca();
             });
         }
 
-        configurarToggleCheckbox('Ckb1', 'NovaSecao');
-        configurarToggleCheckbox('Ckb2', 'NovaFuncao');
-        configurarToggleCheckbox('Ckb3', 'NovoHorario');
-        configurarToggleCheckbox('Ckb5', 'NovoSalario');
+        configurarToggleCheckbox($cb1, 'NovaSecao');
+        configurarToggleCheckbox($cb2, 'NovaFuncao');
+        configurarToggleCheckbox($cb3, 'NovoHorario');
+        configurarToggleCheckbox($cb5, 'NovoSalario');
+        
+        atualizarDataMudanca();
+        
+        $('#NovoSalario').on('keyup', function() {
+            var valor = $(this).val().replace(/\D/g, '');
+            if (valor.length > 0) {
+                valor = (valor / 100).toFixed(2) + '';
+                valor = valor.replace('.', ',');
+                valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+                $(this).val('R$ ' + valor);
+            } else {
+                $(this).val('');
+            }
+        });
+
+        $('#cpNovaJornadaMensal').on('input', function() {
+            var v = $(this).val().replace(/\D/g, '');
+            if (v.length > 5) v = v.substring(0, 5);
+            if (v.length > 3) { $(this).val(v.substring(0, 3) + ':' + v.substring(3, 5)); }
+            else { $(this).val(v); }
+        });
     });
 
     // ========================================================
-    // FUNÇÃO REUTILIZÁVEL AJAX PARA BUSCA INTELIGENTE DE GESTOR
+    // FUNÇÕES DE CRIAÇÃO E CONGELAMENTO DO HISTÓRICO
     // ========================================================
-    function buscarGestorAjax(codSecao, codColigada, callbackSucesso, callbackErro) {
-        var requestData = {
-            "name": "ds_gestoresColaboradoresSecao",
-            "fields": [],
-            "constraints": [
-                { "_field": "CODSECAO", "_initialValue": String(codSecao).trim(), "_finalValue": String(codSecao).trim(), "_type": 1, "_likeSearch": false },
-                { "_field": "CODCOLIGADA", "_initialValue": String(codColigada).trim(), "_finalValue": String(codColigada).trim(), "_type": 1, "_likeSearch": false }
-            ],
-            "order": []
-        };
+    
+    // Mostra ou Esconde o campo "Parecer do BPO" baseado na Decisão
+    window.tratarAcaoBPO = function(obj) {
+        var $painel = $(obj).closest('.panel-body');
+        var valor = $(obj).val();
+        
+        if(valor === 'Incorreto') {
+            $painel.find('.linha-parecer-bpo').slideDown(300);
+        } else {
+            $painel.find('.linha-parecer-bpo').slideUp(300);
+            // Limpa o conteúdo se o usuário mudar de ideia para "Correto"
+            $painel.find('textarea[name^="cpParecercol2_tb"]').val('').trigger('change');
+            $('#cpParecercol2').val('');
+        }
+    }
 
-        var processarRetorno = function(data) {
-            var content = [];
-            // Extração inteligente baseada na resposta da API Rest Fluig vs WCMAPI
-            if (data && Array.isArray(data.values)) {
-                content = data.values; 
-            } else if (data && data.content && Array.isArray(data.content.values)) {
-                content = data.content.values; 
-            } else if (data && Array.isArray(data.content)) {
-                content = data.content; 
-            } else if (Array.isArray(data)) {
-                content = data;
-            }
-            callbackSucesso(content);
-        };
+    function adicionarInteracao(tipo) {
+        var rowId = wdkAddChild('tbInteracoes');
+        $(".fluigicon-trash").hide(); 
+        
+        var $linha = $("#tipoInteracao___" + rowId).closest("tr");
+        $("#tipoInteracao___" + rowId).val(tipo);
 
-        var tentarFallback = function() {
-            $.ajax({
-                url: '/ecm/api/rest/ecm/dataset/getDataset',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(requestData),
-                success: processarRetorno,
-                error: callbackErro
+        $linha.find(".painel-solicitante-dinamico, .painel-bpo-dinamico, .painel-correcao-dinamico").hide();
+
+        if (tipo === "SOLICITANTE") {
+            $linha.find(".painel-solicitante-dinamico").show();
+            $("#cpAnexoGeral_tb___" + rowId).fluigFormAttachment({ showActionButton: true, prefixName: true });
+        } else if (tipo === "CORRECAO") {
+            $linha.find(".painel-correcao-dinamico").show();
+            $("#cpAnexoCorrecao_tb___" + rowId).fluigFormAttachment({ showActionButton: true, prefixName: true });
+        } else if (tipo === "BPO") {
+            $linha.find(".painel-bpo-dinamico").show();
+            $("#cpRespGestor2_tb___" + rowId).val($("#cpRespGestor2").val());
+        }
+    }
+
+    // Função universal e segura para ler dados em ADD/MOD e VIEW
+    function getFieldValue($container, fieldBaseName) {
+        var $el = $container.find("[id*='" + fieldBaseName + "___']");
+        if ($el.length === 0) return "";
+        var val = "";
+        
+        // Verifica que tipo de campo o Fluig renderizou
+        if ($el.is("input") || $el.is("textarea")) {
+            val = $el.val();
+        } else if ($el.is("select")) {
+            val = $el.val();
+            // Tenta pegar o texto visível se o valor for vazio, muito comum no VIEW
+            if (!val) val = $el.find("option:selected").text();
+        } else {
+            // Se virou span/div no VIEW
+            val = $el.text();
+        }
+        return (val || "").trim();
+    }
+
+    function aplicarCongelamento() {
+        var atvAtual = (typeof ATIVIDADE_ATUAL !== 'undefined') ? ATIVIDADE_ATUAL : 0;
+        var modo = (typeof MODO_FORMULARIO !== 'undefined') ? MODO_FORMULARIO : 'ADD';
+
+        if (modo == "VIEW" || atvAtual == 4 || atvAtual == 6 || atvAtual == 11) {
+            var secoesFixas = ["#painelSolicitante", "#painelColaborador", "#painelMovimentacoes", "#divReabertura"];
+            $.each(secoesFixas, function(i, secao) {
+                $(secao).find("input, select, textarea").prop("readonly", true).css("pointer-events", "none").css("background-color", "#f4f6f9");
+                $(secao).find("input[type=checkbox]").prop("disabled", true);
             });
-        };
+            
+            // Lógica Exclusiva BPO: Descongelar as Flags de Validação (Somente Atividade 4)
+            if (atvAtual == 4 && modo !== "VIEW") {
+                $(".checkbox-validacao-bpo input[type='checkbox']").prop("disabled", false).prop("readonly", false).css({"pointer-events": "auto", "background-color": "transparent"});
+            }
 
-        try {
-            if (typeof window.parent !== 'undefined' && window.parent.WCMAPI) {
-                window.parent.WCMAPI.Create({
-                    url: "/api/public/ecm/dataset/datasets/",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(requestData),
-                    success: processarRetorno,
-                    error: function(err) {
-                        console.error("Erro OAuth/WCMAPI: ", err);
-                        tentarFallback();
+            var zooms = ["empresaColab", "dptoObraColab", "nomeColaborador", "CodNovaSecao", "txtNovoFuncao", "txtMotivoFuncao", "CpNovoHorario", "CpIndiceCodHorario", "txtMotivoSalario", "txtMotivoSecao"];
+            zooms.forEach(function(z) { if(window[z]) window[z].disable(true); });
+        }
+
+        // Lê pelas classes no view
+        var $todasAsLinhas = $(".td-interacao");
+        var totalLinhas = $todasAsLinhas.length;
+
+        $todasAsLinhas.each(function(index) {
+            var $linhaAtual = $(this);
+            
+            // Pula a linha template no ADD/MOD
+            var isTemplate = false;
+            var $idField = $linhaAtual.find("[id*='cpObservacoesGerais_tb___']").first();
+            if ($idField.length > 0) {
+                var idVal = $idField.attr("id");
+                if (modo !== "VIEW" && idVal && idVal.indexOf("___") === idVal.length - 3) isTemplate = true;
+            }
+            if (isTemplate) return;
+
+            var isLast = (index === totalLinhas - 1);
+            
+            // Leitura Segura
+            var obsGeral = getFieldValue($linhaAtual, "cpObservacoesGerais_tb");
+            var anexoGeral = getFieldValue($linhaAtual, "cpAnexoGeral_tb");
+            var parecerBPO = getFieldValue($linhaAtual, "cpParecercol2_tb");
+            var decisaoBPO = getFieldValue($linhaAtual, "cpDecisaoRH_tb");
+            var obsCor = getFieldValue($linhaAtual, "cpObservacoesCorrecao_tb");
+            var anexoCor = getFieldValue($linhaAtual, "cpAnexoCorrecao_tb");
+            var tipo = getFieldValue($linhaAtual, "tipoInteracao");
+
+            if (tipo === "") {
+                if (obsCor !== "" || anexoCor !== "") tipo = "CORRECAO";
+                else if (parecerBPO !== "" || (decisaoBPO !== "" && decisaoBPO !== "Selecione...")) tipo = "BPO";
+                else if (obsGeral !== "" || anexoGeral !== "") tipo = "SOLICITANTE";
+            }
+
+            if (tipo === "") return;
+
+            var congelarLinha = false;
+            
+            // A MÁGICA ACONTECE AQUI: A linha do solicitante (Observações Gerais) SEMPRE congela se já não for a etapa inicial
+            if (tipo === "SOLICITANTE" && (atvAtual == 4 || atvAtual == 6 || atvAtual == 11 || modo === "VIEW")) {
+                congelarLinha = true;
+            } 
+            else if (modo === "VIEW") {
+                congelarLinha = true;
+            } else if (atvAtual == 4) {
+                congelarLinha = !(isLast && tipo === "BPO");
+            } else if (atvAtual == 6) {
+                congelarLinha = !(isLast && tipo === "CORRECAO");
+            } else if (atvAtual == 11) {
+                congelarLinha = true;
+            }
+
+            if (congelarLinha) {
+                $linhaAtual.find("input, select, textarea").prop("readonly", true).css("pointer-events", "none").css("background-color", "#f4f6f9");
+                $linhaAtual.find("select").prop("disabled", true);
+                
+                if (tipo === "SOLICITANTE" || tipo === "CORRECAO") {
+                    var isCorrecao = (tipo === "CORRECAO");
+                    var nomeArquivo = isCorrecao ? anexoCor : anexoGeral;
+                    
+                    $linhaAtual.find(".fluigFormAttachmentBtnDeleteFile, .fluigFormAttachmentBtnUploadFile").hide();
+                    
+                    if (nomeArquivo !== "") {
+                        $linhaAtual.find(".row-anexo-interno").show();
+                        $linhaAtual.find(".area-botoes-anexo").show();
+                        var $btnVis = $linhaAtual.find(".btn-visualizar-injetado");
+                        $btnVis.show();
+                        
+                        $btnVis.off("click").on("click", function() {
+                            abrirAnexoFluigNativo(nomeArquivo);
+                        });
+                    } else {
+                        $linhaAtual.find(".row-anexo-interno").hide();
                     }
-                });
+                }
+            }
+        });
+    }
+
+    function restaurarEstilosPaineisDeObservacao() {
+        var contSol = 0;
+        var contBPO = 0;
+        var contCor = 0;
+        var modo = (typeof MODO_FORMULARIO !== 'undefined') ? MODO_FORMULARIO : 'ADD';
+        
+        var timeline = $("#historico-timeline");
+        
+        // Agora busca apenas pela classe para não falhar se o ID 'tbInteracoes' não for gerado no view
+        var $todasAsLinhas = $(".td-interacao");
+        var totalLinhas = $todasAsLinhas.length;
+
+        $todasAsLinhas.each(function(index) {
+            var $linha = $(this);
+            
+            // Pula a linha template no ADD/MOD
+            var isTemplate = false;
+            var $idField = $linha.find("[id*='cpObservacoesGerais_tb___']").first();
+            if ($idField.length > 0) {
+                var idVal = $idField.attr("id");
+                if (idVal && idVal.indexOf("___") === idVal.length - 3) {
+                    isTemplate = true;
+                }
+            }
+            if (modo !== "VIEW" && isTemplate) return;
+
+            var isLast = (index === totalLinhas - 1);
+            
+            $linha.find(".painel-solicitante-dinamico, .painel-bpo-dinamico, .painel-correcao-dinamico").hide();
+
+            // Leitura Segura
+            var obsGeral = getFieldValue($linha, "cpObservacoesGerais_tb");
+            var anexoGeral = getFieldValue($linha, "cpAnexoGeral_tb");
+            var parecerBPO = getFieldValue($linha, "cpParecercol2_tb");
+            var decisaoBPO = getFieldValue($linha, "cpDecisaoRH_tb");
+            var obsCor = getFieldValue($linha, "cpObservacoesCorrecao_tb");
+            var anexoCor = getFieldValue($linha, "cpAnexoCorrecao_tb");
+            var tipo = getFieldValue($linha, "tipoInteracao");
+            
+            // Fallback dedutivo
+            if (tipo === "") {
+                if (obsCor !== "" || anexoCor !== "") tipo = "CORRECAO";
+                else if (parecerBPO !== "" || (decisaoBPO !== "" && decisaoBPO !== "Selecione...")) tipo = "BPO";
+                else if (obsGeral !== "" || anexoGeral !== "") tipo = "SOLICITANTE";
+            }
+
+            var temConteudo = false;
+            if (tipo === "SOLICITANTE" && (obsGeral !== "" || anexoGeral !== "")) temConteudo = true;
+            
+            var temDecisao = (decisaoBPO !== "" && decisaoBPO !== "Selecione...");
+            if (tipo === "BPO" && (parecerBPO !== "" || temDecisao)) temConteudo = true;
+            
+            if (tipo === "CORRECAO" && (obsCor !== "" || anexoCor !== "")) temConteudo = true;
+
+            if (!temConteudo) { 
+                if (modo === "VIEW" || !isLast) { return; } 
+            }
+
+            var $painelAExtrair = null;
+            
+            if (tipo === "SOLICITANTE") {
+                contSol++;
+                $painelAExtrair = $linha.find(".painel-solicitante-dinamico");
+                $painelAExtrair.show();
+                $painelAExtrair.find(".titulo-painel-solicitante").text("Observações e Anexos");
+
+            } else if (tipo === "CORRECAO") {
+                contCor++;
+                $painelAExtrair = $linha.find(".painel-correcao-dinamico");
+                $painelAExtrair.show();
+                $painelAExtrair.find(".titulo-painel-correcao").text("Correção " + contCor);
+
+            } else if (tipo === "BPO") {
+                contBPO++;
+                $painelAExtrair = $linha.find(".painel-bpo-dinamico");
+                $painelAExtrair.show();
+                $painelAExtrair.find(".titulo-painel-bpo").text("Operação IRHO " + contBPO);
+                
+                // Exibe o campo de Parecer no histórico apenas se tiver sido preenchido
+                if (parecerBPO !== "") {
+                    $painelAExtrair.find(".linha-parecer-bpo").show();
+                } else {
+                    $painelAExtrair.find(".linha-parecer-bpo").hide();
+                }
+            }
+            
+            // Extrai o painel formatado para a Div de Timeline Limpa (Forçando a exibição com !important do jQuery)
+            if ($painelAExtrair && $painelAExtrair.length > 0) {
+                $painelAExtrair.css({"margin-bottom": "0", "display": "block", "visibility": "visible"});
+                timeline.append($painelAExtrair);
+            }
+        });
+    }
+    
+    function abrirAnexoFluigNativo(fileName) {
+        try {
+            if (!parent.ECM || !parent.ECM.attachmentTable) return;
+
+            var attachIndex = parent.ECM.attachmentTable.getData().findIndex(function(a) { return a.description === fileName; });
+
+            if (attachIndex === -1) {
+                FLUIGC.toast({title: "Atenção", message: "Anexo não encontrado. Acesse pela aba 'Anexos'.", type: "warning"});
+                return;
+            }
+
+            var e = parent.ECM.attachmentTable.getRow(attachIndex);
+            
+            if (e.documentId) {
+                var t = parent.WCMAPI ? parent.WCMAPI.tenantCode || parent.WCMAPI.organizationId : 1;
+                parent.WKFViewAttachment.openAttachmentView(t, e.documentId, e.version);
             } else {
-                tentarFallback();
+                FLUIGC.toast({title: "Aviso", message: "Arquivo não sincronizado. Envie a solicitação primeiro.", type: "info"});
             }
         } catch(e) {
-            tentarFallback();
+            console.error(e);
+            FLUIGC.toast({title: "Erro", message: "Use a aba 'Anexos' na barra superior.", type: "danger"});
         }
     }
 
     // ========================================================
-    // LOGICA DE RECARREGAMENTO E PREENCHIMENTO DOS ZOOMS
+    // INTEGRAÇÕES E ZOOMS MANTIDOS INTACTOS
     // ========================================================
+
+    function buscarGestorAjax(codSecao, codColigada, callbackSucesso, callbackErro) {
+        var requestData = { "name": "ds_gestoresColaboradoresSecao", "fields": [], "constraints": [ { "_field": "CODSECAO", "_initialValue": String(codSecao).trim(), "_finalValue": String(codSecao).trim(), "_type": 1, "_likeSearch": false }, { "_field": "CODCOLIGADA", "_initialValue": String(codColigada).trim(), "_finalValue": String(codColigada).trim(), "_type": 1, "_likeSearch": false } ], "order": [] };
+        var processarRetorno = function(data) { var content = []; if (data && Array.isArray(data.values)) { content = data.values; } else if (data && data.content && Array.isArray(data.content.values)) { content = data.content.values; } else if (data && Array.isArray(data.content)) { content = data.content; } else if (Array.isArray(data)) { content = data; } callbackSucesso(content); };
+        var tentarFallback = function() { $.ajax({ url: '/ecm/api/rest/ecm/dataset/getDataset', type: 'POST', contentType: 'application/json', data: JSON.stringify(requestData), success: processarRetorno, error: callbackErro }); };
+        try { if (typeof window.parent !== 'undefined' && window.parent.WCMAPI) { window.parent.WCMAPI.Create({ url: "/api/public/ecm/dataset/datasets/", type: "POST", contentType: "application/json", data: JSON.stringify(requestData), success: processarRetorno, error: function(err) { tentarFallback(); } }); } else { tentarFallback(); } } catch(e) { tentarFallback(); }
+    }
+
     function setSelectedZoomItem(selectedItem) {
-        // Quando seleciona a Empresa, libera Dpto/Obra do Colaborador E Novo Dpto/Obra
         if (selectedItem.inputId == "empresaColab") {
-            window["dptoObraColab"].disable(false); 
-            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(false); 
+            window["dptoObraColab"].disable(false);
+            if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(false);
             
             var filter = "CODCOLIGADA," + selectedItem.COLIGADA;
-            if (selectedItem.CODFILIAL) {
-                filter += ",CODFILIAL," + selectedItem.CODFILIAL;
-            }
+            if (selectedItem.CODFILIAL) { filter += ",CODFILIAL," + selectedItem.CODFILIAL; }
             reloadZoomFilterValues("dptoObraColab", filter);
             reloadZoomFilterValues("CodNovaSecao", filter);
         }
 
-        // Quando seleciona Dpto/Obra, libera Colaborador e preenche Dpto Atual
         if (selectedItem.inputId == "dptoObraColab") {
-            window["nomeColaborador"].disable(false); 
+            window["nomeColaborador"].disable(false);
             reloadZoomFilterValues("nomeColaborador", "CODSECAO," + selectedItem.CODIGO);
-
-            // Preenche o campo Dpto/Obra Atual com Código e Descrição
             $("#txtCodSecaoOri").val((selectedItem.CODIGO || "") + " - " + (selectedItem.DESCRICAO || ""));
-            $("#txtSecOrig").val(selectedItem.DESCRICAO || ""); 
+            $("#txtSecOrig").val(selectedItem.DESCRICAO || "");
         }
         
-        // Quando seleciona o NOVO Dpto/Obra (Zoom Integrado)
         if (selectedItem.inputId == "CodNovaSecao") {
-            $("#DesNovaSecao").val(selectedItem.DESCRICAO || ""); 
-            $("#cpNovoGestor").val("Buscando gestor..."); 
+            $("#DesNovaSecao").val(selectedItem.DESCRICAO || "");
+            $("#cpNovoGestor").val("Buscando gestor...");
             
             setTimeout(function() {
                 var codSecaoDest = Array.isArray(selectedItem.CODIGO) ? selectedItem.CODIGO[0] : selectedItem.CODIGO;
-                var codColigadaDest = selectedItem.CODCOLIGADA;
-                if(!codColigadaDest) {
-                    codColigadaDest = $("#empresaColab").val(); 
-                }
-
+                var codColigadaDest = selectedItem.CODCOLIGADA || $("#empresaColab").val();
                 if (codSecaoDest && codColigadaDest) {
                     buscarGestorAjax(codSecaoDest, codColigadaDest, function(content) {
                         if (content && content.length > 0) {
                             var row = content[0];
                             if (row.ERRO) return;
-
                             var codGestor = row.CHAPASUBST && String(row.CHAPASUBST) !== "null" ? String(row.CHAPASUBST).trim() : "";
                             var nomeGestor = row.NOME1 && String(row.NOME1) !== "null" ? String(row.NOME1).trim() : "";
-                            
-                            if (codGestor !== "" && nomeGestor !== "") {
-                                $("#cpNovoGestor").val(codGestor + " - " + nomeGestor);
-                                $("#codGestorDestino").val(codGestor);
-                            } else if (nomeGestor !== "") {
-                                $("#cpNovoGestor").val(nomeGestor);
-                            } else if (codGestor !== "") {
-                                $("#cpNovoGestor").val(codGestor);
-                                $("#codGestorDestino").val(codGestor);
-                            }
-                        } else {
-                            $("#cpNovoGestor").val("Nenhum gestor encontrado na tabela");
-                        }
-                    }, function(err) {
-                        console.error("Erro na requisição do novo gestor: ", err);
-                    });
+                            if (codGestor !== "" && nomeGestor !== "") { $("#cpNovoGestor").val(codGestor + " - " + nomeGestor); $("#codGestorDestino").val(codGestor);
+                            } else if (nomeGestor !== "") { $("#cpNovoGestor").val(nomeGestor);
+                            } else if (codGestor !== "") { $("#cpNovoGestor").val(codGestor); $("#codGestorDestino").val(codGestor); }
+                        } else { $("#cpNovoGestor").val("Nenhum gestor encontrado na tabela"); }
+                    }, function(err) { console.error(err); });
                 }
             }, 150);
         }
 
-        // Quando seleciona o Colaborador, preenche os campos readonly
         if (selectedItem.inputId == "nomeColaborador") {
-            // Campos aba Colaborador
             $("#matricula").val(selectedItem.CHAPA || "");
             $("#cargo").val(selectedItem.CARGO || "");
             $("#dataAdmissao").val(selectedItem.DATAADMISSAO || "");
             $("#tipoFuncionario").val(selectedItem.TIPOFUNCIONARIO || "");
             $("#codSituacao").val(selectedItem.SITUACAO || "");
-            $("#estabilidade").val(selectedItem.COLUMN1 || "");
-            
-            // Campos aba Função
+            $("#salarioColaborador").val(selectedItem.SALARIO || "");
+            $("#horarioColaborador").val(selectedItem.HORARIO || "");
             $("#txtCodFuncao").val(selectedItem.CODFUNCAO || "");
             $("#CargoCol").val(selectedItem.CARGO || "");
-
-            // Campos aba Horário
+            $("#cboFuncaoAtual").val(selectedItem.CBO2002 || "");
             $("#CodHorAtual").val(selectedItem.CODHORARIO || "");
             $("#DescHoraAtual").val(selectedItem.HORARIO || "");
             $("#IndiceAtual").val(selectedItem.INDINICIOHOR || "");
+            $("#Salario").val(selectedItem.SALARIO || "");
 
-            $("#gestor").val("Buscando gestor..."); 
+            if(selectedItem.JORNADAMENSAL) {
+                var jornadaMinutos = parseInt(selectedItem.JORNADAMENSAL, 10);
+                var horas = Math.floor(jornadaMinutos / 60);
+                var minutos = jornadaMinutos % 60;
+                var formatada = ("000" + horas).slice(-3) + ":" + ("0" + minutos).slice(-2);
+                $("#cpJornadaMensal").val(formatada);
+                $("#cpNovaJornadaMensal").val(formatada);
+                $("#cpJornadaFormatada").val(formatada);
+            } else { $("#cpJornadaMensal, #cpNovaJornadaMensal").val(""); }
+
+            $("#gestor").val("Buscando gestor...");
             
             setTimeout(function() {
                 var codSecao = Array.isArray(selectedItem.CODSECAO) ? selectedItem.CODSECAO[0] : selectedItem.CODSECAO;
                 var codColigada = Array.isArray(selectedItem.CODCOLIGADA) ? selectedItem.CODCOLIGADA[0] : selectedItem.CODCOLIGADA;
-
                 if (codSecao && codColigada) {
                     buscarGestorAjax(codSecao, codColigada, function(content) {
                         if (content && content.length > 0) {
                             var row = content[0];
-                            if (row.ERRO) {
-                                console.log("Erro processado pelo script no backend: " + row.ERRO);
-                                $("#gestor").val("Erro ao ler integração (F12)");
-                                return;
-                            }
-
+                            if (row.ERRO) { $("#gestor").val("Erro ao ler integração (F12)"); return; }
                             var codGestor = row.CHAPASUBST && String(row.CHAPASUBST) !== "null" ? String(row.CHAPASUBST).trim() : "";
                             var nomeGestor = row.NOME1 && String(row.NOME1) !== "null" ? String(row.NOME1).trim() : "";
-                            
-                            if (codGestor !== "" && nomeGestor !== "") {
-                                $("#gestor").val(codGestor + " - " + nomeGestor);
-                            } else if (nomeGestor !== "") {
-                                $("#gestor").val(nomeGestor);
-                            } else if (codGestor !== "") {
-                                $("#gestor").val(codGestor);
-                            } else {
-                                $("#gestor").val("Gestor cadastrado sem nome ou código");
-                            }
-                        } else {
-                            $("#gestor").val("Nenhum gestor encontrado na tabela");
-                        }
-                    }, function(err) {
-                        console.error("Erro definitivo na requisição do gestor: ", err);
-                        $("#gestor").val("Falha de comunicação (401)");
-                    });
-                } else {
-                    $("#gestor").val("Colaborador sem Seção/Coligada");
-                }
+                            if (codGestor !== "" && nomeGestor !== "") { $("#gestor").val(codGestor + " - " + nomeGestor);
+                            } else if (nomeGestor !== "") { $("#gestor").val(nomeGestor);
+                            } else if (codGestor !== "") { $("#gestor").val(codGestor);
+                            } else { $("#gestor").val("Gestor cadastrado sem nome ou código"); }
+                        } else { $("#gestor").val("Nenhum gestor encontrado na tabela"); }
+                    }, function(err) { $("#gestor").val("Falha de comunicação (401)"); });
+                } else { $("#gestor").val("Colaborador sem Seção/Coligada"); }
             }, 150);
         }
+
+        if (selectedItem.inputId == "txtNovoFuncao") { $("#txtNovoCodFuncao").val(selectedItem.CODIGO || ""); $("#cboNovaFuncao").val(selectedItem.CBO2002 || ""); }
+        if (selectedItem.inputId == "txtMotivoFuncao") { $("#txtCodMotivoFuncao").val(selectedItem.CODINTERNO || ""); }
+        
+        if (selectedItem.inputId == "CpNovoHorario") {
+            $("#CpNovoCodHorario").val(selectedItem.CODIGO || "");
+            if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); }
+            var codHorario = selectedItem.CODIGO;
+            var codColigada = selectedItem.CODCOLIGADA || $("#empresaColab").val();
+            if (codHorario && codColigada) { window["CpIndiceCodHorario"].disable(false); reloadZoomFilterValues("CpIndiceCodHorario", "CODCOLIGADA," + codColigada + ",CODHORARIO," + codHorario); }
+        }
+
+        if (selectedItem.inputId == "txtMotivoSalario") { $("#txtCodMotivoSalario").val(selectedItem.CODINTERNO || ""); }
+        if (selectedItem.inputId == "txtMotivoSecao") { $("#txtCodMotivoSecao").val(selectedItem.CODINTERNO || ""); }
     }
 
     function removedZoomItem(removedItem) {
-        // Limpeza de campos em cascata
         if (removedItem.inputId == "empresaColab") {
-            reloadZoomFilterValues("dptoObraColab", "");
             if(window["dptoObraColab"]) { window["dptoObraColab"].clear(); window["dptoObraColab"].disable(true); }
-            
-            reloadZoomFilterValues("CodNovaSecao", "");
             if(window["CodNovaSecao"]) { window["CodNovaSecao"].clear(); window["CodNovaSecao"].disable(true); }
-            
-            reloadZoomFilterValues("nomeColaborador", "");
             if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
-            
-            $("#txtCodSecaoOri").val("");
-            $("#txtSecOrig").val("");
-            $("#txtCodFuncao, #CargoCol").val("");
-            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
+            $("#txtCodSecaoOri, #txtSecOrig, #txtCodMotivoSecao, #txtCodFuncao, #CargoCol, #cboFuncaoAtual, #CodHorAtual, #DescHoraAtual, #IndiceAtual, #CpNovoCodHorario, #Salario, #cpJornadaMensal, #NovoSalario, #cpNovaJornadaMensal, #txtCodMotivoSalario").val("");
+            if(window["txtMotivoSecao"]) { window["txtMotivoSecao"].clear(); }
+            if(window["CpNovoHorario"]) { window["CpNovoHorario"].clear(); }
+            if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); }
+            if(window["txtMotivoSalario"]) { window["txtMotivoSalario"].clear(); }
         }
 
         if (removedItem.inputId == "dptoObraColab") {
-            reloadZoomFilterValues("nomeColaborador", "");
             if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
-            
-            $("#txtCodSecaoOri").val("");
-            $("#txtSecOrig").val("");
-            $("#txtCodFuncao, #CargoCol").val("");
-            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
+            $("#txtCodSecaoOri, #txtSecOrig, #txtCodMotivoSecao, #txtCodFuncao, #CargoCol, #cboFuncaoAtual, #CodHorAtual, #DescHoraAtual, #IndiceAtual, #CpNovoCodHorario, #Salario, #cpJornadaMensal, #NovoSalario, #cpNovaJornadaMensal, #txtCodMotivoSalario").val("");
+            if(window["txtMotivoSecao"]) { window["txtMotivoSecao"].clear(); }
+            if(window["CpNovoHorario"]) { window["CpNovoHorario"].clear(); }
+            if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); }
+            if(window["txtMotivoSalario"]) { window["txtMotivoSalario"].clear(); }
         }
 
         if (removedItem.inputId == "nomeColaborador") {
-            $("#matricula, #cargo, #dataAdmissao, #estabilidade, #gestor, #tipoFuncionario, #codSituacao").val("");
-            $("#txtCodFuncao, #CargoCol").val("");
-            $("#CodHorAtual, #DescHoraAtual, #IndiceAtual").val("");
+            $("#matricula, #cargo, #dataAdmissao, #gestor, #tipoFuncionario, #codSituacao, #salarioColaborador, #horarioColaborador").val("");
+            $("#txtCodMotivoSecao, #txtCodFuncao, #CargoCol, #cboFuncaoAtual, #CodHorAtual, #DescHoraAtual, #IndiceAtual, #CpNovoCodHorario, #Salario, #cpJornadaMensal, #NovoSalario, #cpNovaJornadaMensal, #txtCodMotivoSalario").val("");
+            if(window["txtMotivoSecao"]) { window["txtMotivoSecao"].clear(); }
+            if(window["CpNovoHorario"]) { window["CpNovoHorario"].clear(); }
+            if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); }
+            if(window["txtMotivoSalario"]) { window["txtMotivoSalario"].clear(); }
         }
-        
-        if (removedItem.inputId == "CodNovaSecao") {
-            $("#DesNovaSecao").val("");
-            $("#cpNovoGestor").val("");
-            $("#codGestorDestino").val("");
-        }
+
+        if (removedItem.inputId == "CodNovaSecao") { $("#DesNovaSecao, #cpNovoGestor, #codGestorDestino").val(""); }
+        if (removedItem.inputId == "txtMotivoSecao") { $("#txtCodMotivoSecao").val(""); }
+        if (removedItem.inputId == "txtNovoFuncao") { $("#txtNovoCodFuncao, #cboNovaFuncao").val(""); }
+        if (removedItem.inputId == "txtMotivoFuncao") { $("#txtCodMotivoFuncao").val(""); }
+        if (removedItem.inputId == "CpNovoHorario") { $("#CpNovoCodHorario").val(""); if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); } }
+        if (removedItem.inputId == "txtMotivoSalario") { $("#txtCodMotivoSalario").val(""); }
     }
 </script>
-
 </body>
 </html>
