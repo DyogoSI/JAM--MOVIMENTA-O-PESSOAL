@@ -11,7 +11,7 @@
   </void>
   <void method="put">
    <string>camposFormulario, documentoId = 42</string>
-   <array class="java.lang.String" length="71">
+   <array class="java.lang.String" length="83">
     <void index="0">
      <string>cargo</string>
     </void>
@@ -19,211 +19,247 @@
      <string>CargoCol</string>
     </void>
     <void index="2">
-     <string>Ckb1</string>
+     <string>cboFuncaoAtual</string>
     </void>
     <void index="3">
-     <string>Ckb2</string>
+     <string>cboNovaFuncao</string>
     </void>
     <void index="4">
-     <string>Ckb3</string>
+     <string>Ckb1</string>
     </void>
     <void index="5">
-     <string>Ckb5</string>
+     <string>Ckb2</string>
     </void>
     <void index="6">
-     <string>CodCategoria</string>
+     <string>Ckb3</string>
     </void>
     <void index="7">
-     <string>CodFilialDestino</string>
+     <string>Ckb5</string>
     </void>
     <void index="8">
-     <string>codGestorDestino</string>
+     <string>CodCategoria</string>
     </void>
     <void index="9">
-     <string>CodHorAtual</string>
+     <string>CodFilialDestino</string>
     </void>
     <void index="10">
-     <string>CodNovaSecao</string>
+     <string>codGestorDestino</string>
     </void>
     <void index="11">
-     <string>CodPessoa</string>
+     <string>CodHorAtual</string>
     </void>
     <void index="12">
-     <string>CODRECEBIMENTO</string>
+     <string>CodNovaSecao</string>
     </void>
     <void index="13">
-     <string>codSituacao</string>
+     <string>CodPessoa</string>
     </void>
     <void index="14">
-     <string>CodTipo</string>
+     <string>CODRECEBIMENTO</string>
     </void>
     <void index="15">
-     <string>cpAprovador</string>
+     <string>codSituacao</string>
     </void>
     <void index="16">
-     <string>cpDecisaoAprovacao</string>
+     <string>CodTipo</string>
     </void>
     <void index="17">
-     <string>cpDecisaoRH</string>
+     <string>cpAnexoCorrecao_tb</string>
     </void>
     <void index="18">
-     <string>CpIndiceCodHorario</string>
+     <string>cpAnexoGeral_tb</string>
     </void>
     <void index="19">
-     <string>CpIndiceHorario</string>
+     <string>cpDecisaoRH</string>
     </void>
     <void index="20">
-     <string>cpJornadaFormatada</string>
+     <string>cpDecisaoRH_tb</string>
     </void>
     <void index="21">
-     <string>cpJornadaMensal</string>
+     <string>cpFlagNovaRodada</string>
     </void>
     <void index="22">
-     <string>CpNovoCodHorario</string>
+     <string>CpIndiceCodHorario</string>
     </void>
     <void index="23">
-     <string>cpNovoGestor</string>
+     <string>CpIndiceHorario</string>
     </void>
     <void index="24">
-     <string>CpNovoHorario</string>
+     <string>cpJornadaFormatada</string>
     </void>
     <void index="25">
-     <string>cpParecercol2</string>
+     <string>cpJornadaMensal</string>
     </void>
     <void index="26">
-     <string>cpParecerReabertura</string>
+     <string>cpNovaJornadaMensal</string>
     </void>
     <void index="27">
-     <string>cpReaberturaChamado</string>
+     <string>CpNovoCodHorario</string>
     </void>
     <void index="28">
-     <string>cpRespGestor2</string>
+     <string>cpNovoGestor</string>
     </void>
     <void index="29">
-     <string>dataAbertura</string>
+     <string>CpNovoHorario</string>
     </void>
     <void index="30">
-     <string>dataAdmissao</string>
+     <string>cpObservacoesCorrecao_tb</string>
     </void>
     <void index="31">
-     <string>DescHoraAtual</string>
+     <string>cpObservacoesGerais_tb</string>
     </void>
     <void index="32">
-     <string>DesNovaSecao</string>
+     <string>cpParecercol2</string>
     </void>
     <void index="33">
-     <string>dptoObraColab</string>
+     <string>cpParecercol2_tb</string>
     </void>
     <void index="34">
-     <string>DtLimitFer</string>
+     <string>cpParecerReabertura</string>
     </void>
     <void index="35">
-     <string>dtMudancaFuncao</string>
+     <string>cpReaberturaChamado</string>
     </void>
     <void index="36">
-     <string>dtMudancaHorario</string>
+     <string>cpRespGestor2</string>
     </void>
     <void index="37">
-     <string>dtMudancaSalario</string>
+     <string>cpRespGestor2_tb</string>
     </void>
     <void index="38">
-     <string>dtMudancaSecao</string>
+     <string>dataAbertura</string>
     </void>
     <void index="39">
-     <string>empresaColab</string>
+     <string>dataAdmissao</string>
     </void>
     <void index="40">
-     <string>estabilidade</string>
+     <string>DescHoraAtual</string>
     </void>
     <void index="41">
-     <string>FIMPRAZOCONTR</string>
+     <string>DesNovaSecao</string>
     </void>
     <void index="42">
-     <string>gestor</string>
+     <string>dptoObraColab</string>
     </void>
     <void index="43">
-     <string>IndiceAtual</string>
+     <string>DtLimitFer</string>
     </void>
     <void index="44">
-     <string>matricula</string>
+     <string>dtMudanca</string>
     </void>
     <void index="45">
-     <string>nomeColaborador</string>
+     <string>empresaColab</string>
     </void>
     <void index="46">
-     <string>NovoSalario</string>
+     <string>FIMPRAZOCONTR</string>
     </void>
     <void index="47">
-     <string>NROFICHAREG</string>
+     <string>gestor</string>
     </void>
     <void index="48">
-     <string>nSolicitacao</string>
+     <string>horarioColaborador</string>
     </void>
     <void index="49">
-     <string>Salario</string>
+     <string>IndiceAtual</string>
     </void>
     <void index="50">
-     <string>solicitante</string>
+     <string>matricula</string>
     </void>
     <void index="51">
-     <string>TEMPRAZOCONTR</string>
+     <string>nomeColaborador</string>
     </void>
     <void index="52">
-     <string>tipoFuncionario</string>
+     <string>NovoSalario</string>
     </void>
     <void index="53">
-     <string>TxtChapa</string>
+     <string>NROFICHAREG</string>
     </void>
     <void index="54">
-     <string>txtCodFuncao</string>
+     <string>nSolicitacao</string>
     </void>
     <void index="55">
-     <string>txtCodMotivoFuncao</string>
+     <string>Salario</string>
     </void>
     <void index="56">
-     <string>txtCodMotivoHorario</string>
+     <string>salarioColaborador</string>
     </void>
     <void index="57">
-     <string>txtCodMotivoSalario</string>
+     <string>solicitante</string>
     </void>
     <void index="58">
-     <string>txtCodMotivoSecao</string>
+     <string>TEMPRAZOCONTR</string>
     </void>
     <void index="59">
-     <string>txtCodSecaoOri</string>
+     <string>tipoFuncionario</string>
     </void>
     <void index="60">
-     <string>txtDtAdm</string>
+     <string>tipoInteracao</string>
     </void>
     <void index="61">
-     <string>txtMembCipaCod</string>
+     <string>TxtChapa</string>
     </void>
     <void index="62">
-     <string>txtMotivoFuncao</string>
+     <string>txtCodFuncao</string>
     </void>
     <void index="63">
-     <string>txtMotivoHorario</string>
+     <string>txtCodMotivoFuncao</string>
     </void>
     <void index="64">
-     <string>txtMotivoSalario</string>
+     <string>txtCodMotivoHorario</string>
     </void>
     <void index="65">
-     <string>txtMotivoSecao</string>
+     <string>txtCodMotivoSalario</string>
     </void>
     <void index="66">
-     <string>TxtNomeCol</string>
+     <string>txtCodMotivoSecao</string>
     </void>
     <void index="67">
-     <string>txtNovoCodFuncao</string>
+     <string>txtCodSecaoOri</string>
     </void>
     <void index="68">
-     <string>txtNovoFuncao</string>
+     <string>txtDtAdm</string>
     </void>
     <void index="69">
-     <string>txtSalOrigem</string>
+     <string>txtMembCipaCod</string>
     </void>
     <void index="70">
+     <string>txtMotivoFuncao</string>
+    </void>
+    <void index="71">
+     <string>txtMotivoHorario</string>
+    </void>
+    <void index="72">
+     <string>txtMotivoSalario</string>
+    </void>
+    <void index="73">
+     <string>txtMotivoSecao</string>
+    </void>
+    <void index="74">
+     <string>TxtNomeCol</string>
+    </void>
+    <void index="75">
+     <string>txtNovoCodFuncao</string>
+    </void>
+    <void index="76">
+     <string>txtNovoFuncao</string>
+    </void>
+    <void index="77">
+     <string>txtSalOrigem</string>
+    </void>
+    <void index="78">
      <string>txtSecOrig</string>
+    </void>
+    <void index="79">
+     <string>validaFuncaoBPO</string>
+    </void>
+    <void index="80">
+     <string>validaHorarioBPO</string>
+    </void>
+    <void index="81">
+     <string>validaSalarioBPO</string>
+    </void>
+    <void index="82">
+     <string>validaSecaoBPO</string>
     </void>
    </array>
   </void>
@@ -457,7 +493,7 @@
   </void>
   <void method="put">
    <string>camposFormulario, documentoId = 47</string>
-   <array class="java.lang.String" length="45">
+   <array class="java.lang.String" length="64">
     <void index="0">
      <string>avisoPrevio</string>
     </void>
@@ -465,132 +501,189 @@
      <string>cargo</string>
     </void>
     <void index="2">
-     <string>chkAutorizacao</string>
+     <string>chkArquivosBancarios</string>
     </void>
     <void index="3">
-     <string>chkCtps</string>
+     <string>chkCalculo</string>
     </void>
     <void index="4">
-     <string>chkExame</string>
+     <string>chkComunicadoDispensa</string>
     </void>
     <void index="5">
-     <string>chkInformar</string>
+     <string>chkDadosHomologacao</string>
     </void>
     <void index="6">
-     <string>chkNotificacao</string>
+     <string>chkEsocial</string>
     </void>
     <void index="7">
-     <string>chkProtocolo</string>
+     <string>chkExameDemissional</string>
     </void>
     <void index="8">
-     <string>chkRhNiteroi</string>
+     <string>chkGuiaGfd</string>
     </void>
     <void index="9">
-     <string>chkSolicitacao</string>
+     <string>chkKitRescisao</string>
     </void>
     <void index="10">
-     <string>codEvento</string>
+     <string>chkSolicitacaoDesligamento</string>
     </void>
     <void index="11">
-     <string>codSituacao</string>
+     <string>chkValidacaoRh</string>
     </void>
     <void index="12">
-     <string>cpDecisaoRH</string>
+     <string>CodCategoria</string>
     </void>
     <void index="13">
-     <string>cpParecercol2</string>
+     <string>codEvento</string>
     </void>
     <void index="14">
-     <string>cpParecerReabertura</string>
+     <string>CodFilialDestino</string>
     </void>
     <void index="15">
-     <string>cpReaberturaChamado</string>
+     <string>CodPessoa</string>
     </void>
     <void index="16">
-     <string>cpRespGestor2</string>
+     <string>CODRECEBIMENTO</string>
     </void>
     <void index="17">
-     <string>dataAbertura</string>
+     <string>codSituacao</string>
     </void>
     <void index="18">
-     <string>dataAdmissao</string>
+     <string>CodTipo</string>
     </void>
     <void index="19">
-     <string>dataDesligamento</string>
+     <string>cpAnexoCorrecao_tb</string>
     </void>
     <void index="20">
-     <string>dataFimContrato</string>
+     <string>cpAnexoGeral_tb</string>
     </void>
     <void index="21">
-     <string>dataPagamento</string>
+     <string>cpDecisaoRH</string>
     </void>
     <void index="22">
-     <string>descEvento</string>
+     <string>cpDecisaoRH_tb</string>
     </void>
     <void index="23">
-     <string>dptoObraColab</string>
+     <string>cpObservacoesCorrecao_tb</string>
     </void>
     <void index="24">
-     <string>dptoObraSolicitante</string>
+     <string>cpObservacoesGerais_tb</string>
     </void>
     <void index="25">
-     <string>emailSolicitante</string>
+     <string>cpParecercol2</string>
     </void>
     <void index="26">
-     <string>empresaColab</string>
+     <string>cpParecercol2_tb</string>
     </void>
     <void index="27">
-     <string>empresaSolicitante</string>
+     <string>cpParecerReabertura</string>
     </void>
     <void index="28">
-     <string>enviouDp</string>
+     <string>cpParecerReabertura_tb</string>
     </void>
     <void index="29">
-     <string>estabilidade</string>
+     <string>cpReaberturaChamado</string>
     </void>
     <void index="30">
-     <string>estadoSolicitante</string>
+     <string>cpReaberturaChamado_tb</string>
     </void>
     <void index="31">
-     <string>fichaEpi</string>
+     <string>cpRespGestor2</string>
     </void>
     <void index="32">
-     <string>funcaoSolicitante</string>
+     <string>cpRespGestor2_tb</string>
     </void>
     <void index="33">
-     <string>gestor</string>
+     <string>dataAbertura</string>
     </void>
     <void index="34">
-     <string>matricula</string>
+     <string>dataAdmissao</string>
     </void>
     <void index="35">
-     <string>motivoDesligamento</string>
+     <string>dataDesligamento</string>
     </void>
     <void index="36">
-     <string>nomeColaborador</string>
+     <string>dataInicioAviso</string>
     </void>
     <void index="37">
-     <string>nSolicitacao</string>
+     <string>dataPagamento</string>
     </void>
     <void index="38">
-     <string>observacoes</string>
+     <string>descEvento</string>
     </void>
     <void index="39">
-     <string>solicitante</string>
+     <string>dptoObraColab</string>
     </void>
     <void index="40">
-     <string>tipoContratoPrazo</string>
+     <string>DtLimitFer</string>
     </void>
     <void index="41">
-     <string>tipoDesligamento</string>
+     <string>empresaColab</string>
     </void>
     <void index="42">
-     <string>tipoEvento</string>
+     <string>estabilidade</string>
     </void>
     <void index="43">
-     <string>tipoFuncionario</string>
+     <string>FIMPRAZOCONTR</string>
     </void>
     <void index="44">
+     <string>gestor</string>
+    </void>
+    <void index="45">
+     <string>matricula</string>
+    </void>
+    <void index="46">
+     <string>motivoDesligamento</string>
+    </void>
+    <void index="47">
+     <string>nomeColaborador</string>
+    </void>
+    <void index="48">
+     <string>NROFICHAREG</string>
+    </void>
+    <void index="49">
+     <string>nSolicitacao</string>
+    </void>
+    <void index="50">
+     <string>solicitante</string>
+    </void>
+    <void index="51">
+     <string>TEMPRAZOCONTR</string>
+    </void>
+    <void index="52">
+     <string>tipoAviso</string>
+    </void>
+    <void index="53">
+     <string>tipoDesligamento</string>
+    </void>
+    <void index="54">
+     <string>tipoEvento</string>
+    </void>
+    <void index="55">
+     <string>tipoFuncionario</string>
+    </void>
+    <void index="56">
+     <string>tipoInteracao</string>
+    </void>
+    <void index="57">
+     <string>TxtChapa</string>
+    </void>
+    <void index="58">
+     <string>txtDtAdm</string>
+    </void>
+    <void index="59">
+     <string>txtMembCipaCod</string>
+    </void>
+    <void index="60">
+     <string>TxtNomeCol</string>
+    </void>
+    <void index="61">
+     <string>txtSalOrigem</string>
+    </void>
+    <void index="62">
+     <string>valor</string>
+    </void>
+    <void index="63">
      <string>valorEvento</string>
     </void>
    </array>

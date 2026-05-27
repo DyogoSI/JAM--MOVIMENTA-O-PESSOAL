@@ -124,7 +124,6 @@
         <input type="hidden" id="CODRECEBIMENTO" name="CODRECEBIMENTO" />
         <input type="hidden" id="CodFilialDestino" name="CodFilialDestino" />
         
-        <!-- VARIÁVEIS OCULTAS -->
         <input type="text" id="cpRespGestor2" name="cpRespGestor2" style="display:none;" />
         <input type="text" id="cpDecisaoRH" name="cpDecisaoRH" style="display:none;" />
         <input type="text" id="cpParecercol2" name="cpParecercol2" style="display:none;" />
@@ -291,7 +290,6 @@
                         </div>
                     </div>
                     
-                    <!-- ABA: DEPARTAMENTO / OBRA -->
                     <div class="NovaSecao" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -354,7 +352,6 @@
                         </div>
                     </div>
                     
-                    <!-- ABA: FUNÇÃO -->
                     <div class="NovaFuncao" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -431,7 +428,6 @@
                         </div>
                     </div>
                     
-                    <!-- ABA: HORÁRIO -->
                     <div class="NovoHorario" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -521,7 +517,6 @@
                         </div>
                     </div>
                     
-                    <!-- ABA: SALÁRIO -->
                     <div class="NovoSalario" style="display: none;">
                         <hr style="border-top: 1px dashed #d1d8e0; margin: 30px 0 20px 0;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -582,10 +577,8 @@
                 </div>
             </div>
 
-            <!-- TIMELINE LIMPA: Aqui os painéis preenchidos serão injetados -->
             <div id="historico-timeline"></div>
 
-            <!-- TABELA ORIGINAL OCULTA: Serve apenas para gravar os dados Pai x Filho -->
             <div class="tabelas-ocultas">
                 <table class="table" tablename="tbInteracoes" id="tbInteracoes" noaddbutton="true" nodeletebutton="true" style="border:none; margin:0; padding:0; width:100%;">
                     <thead><tr class="hide"><th></th></tr></thead>
@@ -595,7 +588,6 @@
                                  
                                 <input type="text" name="tipoInteracao" id="tipoInteracao" style="display:none;" />
                                  
-                                <!-- DIV 1: PAINEL SOLICITANTE INICIAL -->
                                 <div class="panel panel-default painel-obs-dinamico painel-solicitante-dinamico" style="margin-bottom: 30px;">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
@@ -626,7 +618,6 @@
                                     </div>
                                 </div>
                                  
-                                <!-- DIV 2: PAINEL BPO (OPERAÇÃO IRHO) -->
                                 <div class="panel panel-info painel-bpo-dinamico" style="margin-bottom: 30px;">
                                     <div class="panel-heading">
                                         <h3 class="panel-title">
@@ -649,7 +640,6 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <!-- Nova Div englobando o Parecer para Ocultar/Mostrar -->
                                         <div class="row linha-parecer-bpo" style="display: none;">
                                             <div class="col-md-12 form-group">
                                                 <label>Parecer do BPO</label>
@@ -659,7 +649,6 @@
                                     </div>
                                 </div>
                                  
-                                <!-- DIV 3: PAINEL CORREÇÃO -->
                                 <div class="panel panel-danger painel-correcao-dinamico" style="margin-bottom: 30px;">
                                     <div class="panel-heading" style="background-color: #d9534f !important; color: white; border: none;">
                                         <h3 class="panel-title">
@@ -694,10 +683,7 @@
                         </tr>
                     </tbody>
                 </table>
-            </div> <!-- Fim Tabela Oculta -->
-            
-            <!-- AÇÃO SOLICITANTE FINAL -->
-            <div class="panel panel-primary" id="divReabertura" style="display: none;">
+            </div> <div class="panel panel-primary" id="divReabertura" style="display: none;">
                 <div class="panel-heading">
                     <h3 class="panel-title"><i class="fluigicon fluigicon-form fluigicon-sm"></i> Ação Solicitante</h3>
                 </div>
@@ -728,6 +714,20 @@
 <script type="text/javascript">
     $(document).ready(function() {
         
+        // =========================================================================
+        // CORREÇÃO DE CORS NO UPLOAD: Intercepta e reescreve a URL do servidor
+        // =========================================================================
+        if (parent && parent.$) {
+            parent.$.ajaxPrefilter(function(options, originalOptions, jqXHR) {
+                // Verifica se a requisição está indo para a rota nativa de upload do Fluig
+                if (options.url && options.url.indexOf("/ecm/upload") !== -1) {
+                    // Remove qualquer IP ou Domínio fixo da URL e força usar o domínio atual do navegador
+                    options.url = options.url.replace(/^https?:\/\/[^\/]+/, window.location.origin);
+                }
+            });
+        }
+        // =========================================================================
+
         setTimeout(function() {
             if(window["dptoObraColab"]) window["dptoObraColab"].disable(true);
             if(window["nomeColaborador"]) window["nomeColaborador"].disable(true);
@@ -1128,19 +1128,40 @@
     }
 
     function setSelectedZoomItem(selectedItem) {
+        
+        // 1. QUANDO SELECIONAR A EMPRESA-FILIAL
         if (selectedItem.inputId == "empresaColab") {
             window["dptoObraColab"].disable(false);
             if(window["CodNovaSecao"]) window["CodNovaSecao"].disable(false);
-            
+
             var filter = "CODCOLIGADA," + selectedItem.COLIGADA;
             if (selectedItem.CODFILIAL) { filter += ",CODFILIAL," + selectedItem.CODFILIAL; }
+            
             reloadZoomFilterValues("dptoObraColab", filter);
             reloadZoomFilterValues("CodNovaSecao", filter);
+
+            // Guarda a Coligada e Filial em variáveis globais para a próxima etapa
+            window.ColigadaSelecionada = selectedItem.COLIGADA;
+            window.FilialSelecionada = selectedItem.CODFILIAL || "";
         }
 
+        // 2. QUANDO SELECIONAR O DPTO/OBRA
         if (selectedItem.inputId == "dptoObraColab") {
             window["nomeColaborador"].disable(false);
-            reloadZoomFilterValues("nomeColaborador", "CODSECAO," + selectedItem.CODIGO);
+            
+            // Concatena Seção, Coligada e Filial no filtro do Colaborador
+            var filterColab = "CODSECAO," + selectedItem.CODIGO;
+            
+            // Resgata a coligada/filial das variáveis globais
+            var codCol = selectedItem.CODCOLIGADA || window.ColigadaSelecionada;
+            var codFil = selectedItem.CODFILIAL || window.FilialSelecionada;
+
+            if (codCol) { filterColab += ",CODCOLIGADA," + codCol; }
+            if (codFil) { filterColab += ",CODFILIAL," + codFil; }
+
+            // Recarrega o zoom de Colaboradores aplicando todos os filtros juntos
+            reloadZoomFilterValues("nomeColaborador", filterColab);
+
             $("#txtCodSecaoOri").val((selectedItem.CODIGO || "") + " - " + (selectedItem.DESCRICAO || ""));
             $("#txtSecOrig").val(selectedItem.DESCRICAO || "");
         }
@@ -1232,15 +1253,21 @@
     }
 
     function removedZoomItem(removedItem) {
+        
         if (removedItem.inputId == "empresaColab") {
             if(window["dptoObraColab"]) { window["dptoObraColab"].clear(); window["dptoObraColab"].disable(true); }
             if(window["CodNovaSecao"]) { window["CodNovaSecao"].clear(); window["CodNovaSecao"].disable(true); }
             if(window["nomeColaborador"]) { window["nomeColaborador"].clear(); window["nomeColaborador"].disable(true); }
+            
             $("#txtCodSecaoOri, #txtSecOrig, #txtCodMotivoSecao, #txtCodFuncao, #CargoCol, #cboFuncaoAtual, #CodHorAtual, #DescHoraAtual, #IndiceAtual, #CpNovoCodHorario, #Salario, #cpJornadaMensal, #NovoSalario, #cpNovaJornadaMensal, #txtCodMotivoSalario").val("");
             if(window["txtMotivoSecao"]) { window["txtMotivoSecao"].clear(); }
             if(window["CpNovoHorario"]) { window["CpNovoHorario"].clear(); }
             if(window["CpIndiceCodHorario"]) { window["CpIndiceCodHorario"].clear(); window["CpIndiceCodHorario"].disable(true); }
             if(window["txtMotivoSalario"]) { window["txtMotivoSalario"].clear(); }
+
+            // Limpa a memória das variáveis de filtro para evitar vazamento entre seleções
+            window.ColigadaSelecionada = "";
+            window.FilialSelecionada = "";
         }
 
         if (removedItem.inputId == "dptoObraColab") {
